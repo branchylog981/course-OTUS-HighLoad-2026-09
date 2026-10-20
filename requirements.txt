@@ -1,0 +1,8 @@
+fastapi==0.150.0
+uvicorn==0.54.0
+psycopg[binary,pool]==3.3.6
+psycopg-pool==3.3.3
+argon2-cffi==25.1.0
+PyJWT==2.15.1
+pydantic==2.14.1
+pydantic-settings==2.16.0

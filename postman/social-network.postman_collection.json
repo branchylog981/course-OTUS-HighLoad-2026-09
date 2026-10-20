@@ -1,0 +1,494 @@
+{
+  "info": {
+    "_postman_id": "bb44e18a-d475-4e52-9177-dda79f7ee5b4",
+    "name": "Social Network — Homework 1",
+    "description": "Run in order with Social Network Local environment. Registration and login save user_id and token automatically. Each run creates two users.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01. Готовность приложения и PostgreSQL",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/health",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Ready\", () => pm.expect(pm.response.json().status).to.eql(\"ok\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02. Регистрация пользователя",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/user/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"first_name\": \"Иван\",\n  \"second_name\": \"Петров\",\n  \"birthdate\": \"1994-05-21\",\n  \"gender\": \"male\",\n  \"biography\": \"Книги, музыка, программирование\",\n  \"city\": \"Москва\",\n  \"password\": \"{{password}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"UUID returned\", () => pm.expect(pm.response.json().user_id).to.match(/^[0-9a-f-]{36}$/));",
+              "if (pm.response.code === 200) pm.environment.set(\"user_id\", pm.response.json().user_id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03. Вход",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"{{user_id}}\",\n  \"password\": \"{{password}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"JWT returned\", () => pm.expect(pm.response.json().token.split(\".\")).to.have.lengthOf(3));",
+              "if (pm.response.code === 200) pm.environment.set(\"token\", pm.response.json().token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04. Публичная анкета по ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/user/get/{{user_id}}",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Profile fields\", () => { const p = pm.response.json(); pm.expect(p.id).to.eql(pm.environment.get(\"user_id\")); pm.expect(p.first_name).to.eql(\"Иван\"); pm.expect(p.second_name).to.eql(\"Петров\"); pm.expect(p.birthdate).to.eql(\"1994-05-21\"); pm.expect(p.gender).to.eql(\"male\"); pm.expect(p.city).to.eql(\"Москва\"); pm.expect(p.biography).to.eql(\"Книги, музыка, программирование\"); });",
+              "pm.test(\"No password in profile\", () => { const p = pm.response.json(); pm.expect(p).not.to.have.property(\"password\"); pm.expect(p).not.to.have.property(\"password_hash\"); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05. Своя анкета с токеном",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/user/me",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Own profile\", () => pm.expect(pm.response.json().id).to.eql(pm.environment.get(\"user_id\")));",
+              "pm.test(\"No password in profile\", () => { const p = pm.response.json(); pm.expect(p).not.to.have.property(\"password\"); pm.expect(p).not.to.have.property(\"password_hash\"); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06. Своя анкета без токена",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/user/me",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 401\", () => pm.response.to.have.status(401));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07. Неверный пароль",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"{{user_id}}\",\n  \"password\": \"wrong-password\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 404\", () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08. Несуществующая анкета",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/user/get/00000000-0000-0000-0000-000000000000",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 404\", () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09. Некорректный ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/user/get/not-a-uuid",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Некорректная дата рождения",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/user/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"first_name\": \"Иван\",\n  \"second_name\": \"Петров\",\n  \"birthdate\": \"2999-01-01\",\n  \"gender\": \"male\",\n  \"biography\": \"Книги, музыка, программирование\",\n  \"city\": \"Москва\",\n  \"password\": \"{{password}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11. Слишком короткий пароль",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/user/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"first_name\": \"Иван\",\n  \"second_name\": \"Петров\",\n  \"birthdate\": \"1994-05-21\",\n  \"gender\": \"male\",\n  \"biography\": \"Книги, музыка, программирование\",\n  \"city\": \"Москва\",\n  \"password\": \"short\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12. Некорректный JSON",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/user/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"first_name\":",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "13. SQL-инъекция в ID входа",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"' OR 1=1 --\",\n  \"password\": \"{{password}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "14. Регистрация текста SQL-инъекции",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/user/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"first_name\": \"Robert'); DROP TABLE users; --\",\n  \"second_name\": \"O'Reilly\",\n  \"birthdate\": \"1994-05-21\",\n  \"gender\": \"male\",\n  \"biography\": \"Robert'); DROP TABLE users; --\",\n  \"city\": \"Москва\",\n  \"password\": \"{{password}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "if (pm.response.code === 200) pm.environment.set(\"injection_user_id\", pm.response.json().user_id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "15. SQL-инъекция сохранилась как текст",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/user/get/{{injection_user_id}}",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"SQL is plain text\", () => { const p = pm.response.json(); pm.expect(p.first_name).to.eql(\"Robert'); DROP TABLE users; --\"); pm.expect(p.biography).to.eql(\"Robert'); DROP TABLE users; --\"); pm.expect(p.second_name).to.eql(\"O'Reilly\"); });",
+              "pm.test(\"No password in profile\", () => { const p = pm.response.json(); pm.expect(p).not.to.have.property(\"password\"); pm.expect(p).not.to.have.property(\"password_hash\"); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "16. Первая анкета по-прежнему доступна",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/user/get/{{user_id}}",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Table intact\", () => pm.expect(pm.response.json().first_name).to.eql(\"Иван\"));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
