@@ -41,7 +41,7 @@ def register(client, profile_data):
 
     yield create
 
-    # Delete only users created by this test; never truncate an existing database.
+    # подчищаем только то, что создали сами
     if created_ids:
         with client.app.state.pool.connection() as conn:
             conn.execute("DELETE FROM users WHERE id = ANY(%s)", (created_ids,))

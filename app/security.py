@@ -14,7 +14,7 @@ class Security:
     def __init__(self, settings: Settings):
         self.settings = settings
         self.hasher = PasswordHasher(time_cost=3, memory_cost=65536, parallelism=4, type=Type.ID)
-        # Keep the expensive verification for nonexistent users, too.
+        # фиктивный хеш, чтобы время ответа для несуществующего id не отличалось
         self.dummy_hash = self.hasher.hash(secrets.token_urlsafe(32))
 
     def hash_password(self, password: str) -> str:

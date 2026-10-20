@@ -5,7 +5,7 @@ from app.config import Settings
 
 
 def test_short_jwt_secret_is_rejected():
-    with pytest.raises(ValidationError, match="at least 32 bytes"):
+    with pytest.raises(ValidationError, match="не короче 32 байт"):
         Settings(jwt_secret="short")
 
 

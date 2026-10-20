@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "bb44e18a-d475-4e52-9177-dda79f7ee5b4",
-    "name": "Social Network — Homework 1",
-    "description": "Run in order with Social Network Local environment. Registration and login save user_id and token automatically. Each run creates two users.",
+    "name": "social network hw1",
+    "description": "Запускать по порядку, окружение Social Network Local. user_id и token сохраняются автоматически, каждый прогон создаёт двух пользователей.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [

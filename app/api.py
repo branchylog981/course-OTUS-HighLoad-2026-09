@@ -52,16 +52,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             yield
 
     app = FastAPI(
-        title="Social Network — Homework 1",
-        version="1.0.0",
-        description="Монолит: регистрация, вход и просмотр анкет. PostgreSQL, без ORM.",
+        title="social network hw1",
         lifespan=lifespan,
         responses={400: {"model": ErrorResponse}, 503: {"model": ErrorResponse}},
     )
 
     @app.exception_handler(RequestValidationError)
     async def invalid_request(_request: Request, _exc: RequestValidationError):
-        # Never echo input: validation errors may contain the plaintext password.
         return JSONResponse(status_code=400, content={"message": "Невалидные данные запроса"})
 
     @app.exception_handler(HTTPException)
@@ -161,7 +158,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             conn.execute("SELECT 1")
         return {"status": "ok"}
 
-    # Validation is mapped to 400 above; keep Swagger consistent with actual responses.
+    # в OpenAPI не должно быть 422: валидация отдаёт 400
     schema = app.openapi()
     for path in schema["paths"].values():
         for operation in path.values():

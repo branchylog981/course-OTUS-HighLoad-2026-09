@@ -1,49 +1,30 @@
-# Социальная сеть — ДЗ №1
+# Социальная сеть (ДЗ 1)
 
-Монолитное API на **Python 3.14 / FastAPI / PostgreSQL 17**: регистрация, вход и просмотр анкет. SQL выполняется напрямую через psycopg 3, ORM нет. Фронтенд не требуется для выполнения ДЗ; для ручной проверки доступен Swagger UI.
+Монолитное API на FastAPI и PostgreSQL 17 по заданию OTUS (курс Highload). Реализованы три метода из [спецификации](https://github.com/OtusTeam/highload/blob/master/homework/openapi.json), плюс `/user/me` для проверки токена и `/health`. ORM нет, SQL пишется напрямую через psycopg 3.
 
-Контракт основан на [спецификации OTUS](https://github.com/OtusTeam/highload/blob/master/homework/openapi.json). Реализованы три метода задания. Дополнительно доступны авторизованный `/user/me` и проверка готовности `/health`.
+## Запуск
 
-## Запуск через Docker Compose
-
-Понадобятся Docker Engine/Desktop с работающим daemon и Docker Compose v2+. В WSL включите интеграцию Docker Desktop с используемым дистрибутивом.
+Нужны Docker и Docker Compose v2.
 
 ```bash
 cp .env.example .env
-python3 - <<'PY'
-from pathlib import Path
-import secrets
-p = Path('.env')
-p.write_text(p.read_text().replace(
-    'replace-this-with-a-random-secret-at-least-32-characters',
-    secrets.token_hex(32),
-))
-p.chmod(0o600)
-PY
+# вписать в .env свой JWT_SECRET (случайная строка от 32 символов, можно
+# сгенерировать: python3 -c 'import secrets; print(secrets.token_hex(32))')
 docker compose up -d --build --wait
 ```
 
-Приложение: http://localhost:8080. Swagger UI: http://localhost:8080/docs. OpenAPI: http://localhost:8080/openapi.json. Готовность приложения и БД: http://localhost:8080/health.
+- API: http://localhost:8080
+- Swagger: http://localhost:8080/docs
 
-Compose сначала ожидает PostgreSQL, затем выполняет SQL-миграцию отдельной одноразовой командой и запускает приложение. Это один монолит и одна БД. Данные сохраняются в Docker volume `postgres_data`. PostgreSQL не публикует порт на хост; API доступно на loopback-интерфейсе. Если порт занят, измените `APP_PORT` в `.env` и `base_url` в Postman.
+Compose поднимает PostgreSQL, одноразовым сервисом `migrate` накатывает миграцию из `migrations/`, потом запускает приложение. Данные лежат в volume `postgres_data`, порт БД наружу не публикуется. `docker compose down` данные сохраняет, `down -v` — удаляет вместе с БД. После правок кода — снова `docker compose up -d --build --wait`.
 
-```bash
-docker compose ps -a
-docker compose logs app migrate
-docker compose down
-```
+## Методы
 
-`down` сохраняет данные. **`docker compose down -v` удаляет данные БД.** После изменения кода используйте `docker compose up -d --build --wait`. Миграция `001` идемпотентна (`CREATE TABLE IF NOT EXISTS`); она создает первоначальную схему, но не меняет структуру уже существующей таблицы. Последующие изменения схемы нужно оформлять отдельными миграциями.
-
-## API
-
-| Метод | Путь | Результат |
-| --- | --- | --- |
-| POST | `/user/register` | `200 {"user_id": "UUID"}` |
-| POST | `/login` | `200 {"token": "JWT"}` |
-| GET | `/user/get/{id}` | `200` и анкета, просмотр публичный |
-| GET | `/user/me` | `200` и собственная анкета; нужен `Authorization: Bearer <token>` |
-| GET | `/health` | `200 {"status": "ok"}`, если БД отвечает |
+- `POST /user/register` — регистрация, возвращает `{"user_id": "UUID"}`
+- `POST /login` — вход по `id` и паролю, возвращает `{"token": "JWT"}`
+- `GET /user/get/{id}` — анкета по id, без авторизации (так в исходной спецификации)
+- `GET /user/me` — своя анкета, нужен `Authorization: Bearer <token>`
+- `GET /health` — `{"status": "ok"}`, если БД отвечает
 
 Регистрация:
 
@@ -61,7 +42,7 @@ curl -sS http://localhost:8080/user/register \
   }'
 ```
 
-Логин — UUID, возвращенный при регистрации. Подставьте его вместо `USER_ID`:
+В `/login` передаётся `id` из ответа регистрации:
 
 ```bash
 curl -sS http://localhost:8080/login \
@@ -71,68 +52,42 @@ curl -sS http://localhost:8080/login \
 curl -sS http://localhost:8080/user/get/USER_ID
 
 curl -sS http://localhost:8080/user/me \
-  -H 'Authorization: Bearer TOKEN_FROM_LOGIN'
+  -H 'Authorization: Bearer TOKEN'
 ```
 
-Анкета содержит `id`, `first_name`, `second_name`, `birthdate`, `gender`, `biography`, `city`. Пароль и его хеш никогда не возвращаются.
+В анкете нет пароля и его хеша, только поля профиля.
 
-Правила ввода:
+## Валидация и ошибки
 
-- Имя, фамилия и город — непустые строки до 100 символов; пробелы по краям удаляются.
-- Дата рождения — строго `YYYY-MM-DD`, от `1900-01-01` до текущей даты UTC.
-- `gender` — `male`, `female`, `other`, `unspecified`. Это расширение спецификации OTUS, в которой пол отсутствует. Если поле не передано, сохраняется `unspecified` для совместимости с исходными примерами.
-- Интересы передаются в `biography`: до 5000 символов, пустая строка допустима.
-- Пароль при регистрации — 8–128 символов, без обрезки пробелов или иных преобразований. Для входа допустимы 1–128 символов.
-- Все поля регистрации, кроме `gender`, обязательны. Неизвестные поля отклоняются. Нулевые байты в полях анкеты запрещены.
+- имя, фамилия, город — непустые, до 100 символов, пробелы по краям срезаются
+- дата рождения — строго `YYYY-MM-DD`, от 1900-01-01 до текущей даты
+- пол — `male` / `female` / `other` / `unspecified`; в спецификации OTUS этого поля нет, если не передано, сохраняется `unspecified`
+- биография — до 5000 символов
+- пароль — 8–128 символов при регистрации, 1–128 при входе; лишние поля отклоняются
 
-Ошибки имеют вид `{"message": "Описание"}`:
+Ошибки приходят как `{"message": "..."}`. Коды: 400 — невалидные данные, 401 — нет или битый токен у `/user/me`, 404 — нет анкеты, а при входе — неверный id или пароль (ответ одинаковый, у логина в исходном контракте 401 нет), 503 — БД недоступна (`Retry-After: 5`).
 
-| Код | Причина |
-| --- | --- |
-| 400 | Невалидный JSON, поля, дата или UUID |
-| 401 | Отсутствующий, поддельный или просроченный токен для `/user/me` |
-| 404 | Нет анкеты; при входе — неверный ID **или** пароль (одинаковый ответ) |
-| 500 | Внутренняя ошибка без технических подробностей |
-| 503 | БД недоступна, исчерпан пул соединений или истек тайм-аут; `Retry-After: 5` |
+## Проверки
 
-Код `404` для неверных учетных данных выбран по исходному контракту OTUS, где у `/login` нет ответа `401`. Публичный просмотр по ID также соответствует исходной спецификации. `/user/me` демонстрирует использование выданного токена.
-
-## Postman
-
-Импортируйте оба файла:
-
-- [`postman/social-network.postman_collection.json`](postman/social-network.postman_collection.json)
-- [`postman/local.postman_environment.json`](postman/local.postman_environment.json)
-
-Выберите окружение **Social Network Local** и выполните коллекцию целиком через Collection Runner, в исходном порядке. Регистрация автоматически сохраняет `user_id`, вход — `token`. Коллекция проверяет успешный сценарий и ошибки, включая SQL-инъекции. Каждый запуск создает двух новых пользователей; данные предыдущего запуска не мешают проверкам.
-
-Для запуска из терминала с Node.js/npm:
-
-```bash
-npx --yes newman run postman/social-network.postman_collection.json \
-  -e postman/local.postman_environment.json
-```
-
-## Автоматические проверки
-
-Интеграционные тесты используют **настоящий PostgreSQL** из Compose:
+Тесты идут против настоящего PostgreSQL из compose:
 
 ```bash
 docker compose --profile test run --rm tests
 ```
 
-Проверяются полный сценарий, отдельные соли Argon2id, сохранение SQL-инъекций как текста, неверные/просроченные JWT, валидация, параллельные чтения и ответ `503`. Тесты удаляют только созданных ими пользователей, без `TRUNCATE`. Postman-коллекция также проверяется на согласованность автоматически.
+Покрыты основной сценарий, ошибки валидации, JWT (просроченный, подписанный другим секретом, другим алгоритмом), проверка, что SQL-инъекции сохраняются как обычный текст, и параллельные чтения. Тесты удаляют только созданных ими пользователей.
 
-Для проверки стиля:
+Линт там же: `ruff check app tests` и `ruff format --check app tests`.
+
+Postman: импортировать оба файла из `postman/`, окружение **Social Network Local**, запускать шаги по порядку (регистрация и логин сами сохраняют `user_id` и `token`). Или через newman:
 
 ```bash
-docker compose --profile test run --rm tests ruff check app tests
-docker compose --profile test run --rm tests ruff format --check app tests
+npx --yes newman run postman/social-network.postman_collection.json -e postman/local.postman_environment.json
 ```
 
-## Запуск Python без контейнера приложения
+## Запуск без Docker
 
-Нужны Python 3.14 и доступная PostgreSQL 17. Создайте пустую БД и пользователя, заполните `DATABASE_URL` и `JWT_SECRET` в `.env`. Пароль в URL должен быть percent-encoded, если содержит специальные символы. Альтернатива — пустой `DATABASE_URL` и стандартные переменные `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`.
+Нужны Python 3.14 и PostgreSQL 17. Создать пустую БД, заполнить `DATABASE_URL` и `JWT_SECRET` в `.env` (либо оставить `DATABASE_URL` пустым и задать стандартные `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`):
 
 ```bash
 python3 -m venv .venv
@@ -141,40 +96,18 @@ python3 -m venv .venv
 .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8080
 ```
 
-В другом терминале: `.venv/bin/python -m pytest -q`. При таком запуске настройки читаются из `.env`. В Compose DSN формируется libpq из отдельных переменных PostgreSQL; поэтому пароль БД со специальными символами не требует URL-кодирования.
+Тесты в другом терминале: `.venv/bin/python -m pytest -q`.
 
-## Устройство и безопасность
+## Как устроено
 
-```text
-app/api.py           HTTP-методы, зависимости и обработка ошибок
-app/models.py        Входные данные и публичная анкета
-app/repository.py    SQL-запросы с параметрами %s
-app/security.py      Argon2id, выпуск и проверка JWT
-app/config.py        Переменные окружения
-app/migrate.py       Применение первоначальной SQL-миграции
-migrations/          Схема БД
-tests/               Интеграционные проверки
-postman/             Коллекция и локальное окружение
-```
+- `app/api.py` — ручки FastAPI, зависимости, обработка ошибок
+- `app/models.py` — pydantic-модели запросов и анкеты
+- `app/repository.py` — SQL-запросы
+- `app/security.py` — argon2 и JWT
+- `app/config.py` — настройки из переменных окружения
+- `app/migrate.py` — применение миграции
+- `migrations/001_create_users.sql` — схема, одна таблица `users`
 
-Пароли хешируются Argon2id с независимой случайной солью (`64 MiB`, 3 прохода, параллелизм 4). Исходные пароли не сохраняются. При несуществующем пользователе выполняется проверка фиктивного хеша, чтобы не пропускать дорогую операцию проверки пароля.
+Пароли — Argon2id с независимой солью; для несуществующих id проверяется фиктивный хеш, чтобы время ответа не выдавало, есть ли пользователь. Токен — JWT HS256 с exp/iss/aud, при проверке алгоритм зафиксирован, TTL задаётся `TOKEN_TTL_SECONDS` (по умолчанию час). Секрет — минимум 32 байта, меняется в `.env`; смена секрета сбрасывает все выданные токены.
 
-JWT подписывается HS256, содержит срок действия, ID пользователя, издателя и аудиторию; при проверке алгоритм зафиксирован. По умолчанию срок действия — 3600 секунд (`TOKEN_TTL_SECONDS`, допустимо 60–86400). JWT_SECRET должен содержать не менее 32 байт; используйте случайное значение. Токены не сохраняются в БД, выхода и отзыва отдельных токенов в этом ДЗ нет; смена секрета аннулирует все выданные токены.
-
-Все SQL-запросы с данными используют связывание параметров psycopg; строковой подстановки в SQL нет. Статические DDL и `SELECT 1` не содержат пользовательского ввода. Соединения с БД берутся из ограниченного пула; это не кэш данных. Репликация, шардирование и кэширование не используются. Создается только индекс первичного ключа, автоматически необходимый PostgreSQL для уникальности ID; дополнительных индексов нет.
-
-Пароли и токены не выводятся приложением в сообщения ошибок. `.env` исключен из Git и Docker build context. Для публичного размещения потребуется HTTPS и ограничение частоты попыток входа; текущая конфигурация предназначена для локальной сдачи ДЗ.
-
-## Публикация на GitHub
-
-После создания пустого репозитория на GitHub выполните из каталога проекта:
-
-```bash
-git init -b main
-git add .
-git commit -m "Implement social network homework 1"
-git remote add origin https://github.com/YOUR_ACCOUNT/YOUR_REPOSITORY.git
-git push -u origin main
-```
-
-Для сдачи приложите ссылку на репозиторий и файл Postman-коллекции из `postman/`. Локальный `.env` и виртуальное окружение в репозиторий не попадут.
+Все запросы с пользовательскими данными идут через параметры `%s`, строковой склейки в SQL нет. Соединения — из пула psycopg_pool. Индекс только под первичный ключ, дополнительных нет. Репликации, шардирования и кэшей нет — по заданию это пока монолит.

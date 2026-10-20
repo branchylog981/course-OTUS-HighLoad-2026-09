@@ -1,4 +1,3 @@
--- PostgreSQL creates only the index required by PRIMARY KEY. No secondary indexes.
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL CHECK (length(btrim(first_name)) > 0),

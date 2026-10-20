@@ -16,19 +16,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Configure local environment
+      - name: Set up env file
         run: |
           cp .env.example .env
-          python3 - <<'PY'
-          from pathlib import Path
-          import secrets
-          p = Path('.env')
-          p.write_text(p.read_text().replace(
-              'replace-this-with-a-random-secret-at-least-32-characters',
-              secrets.token_hex(32),
-          ))
-          p.chmod(0o600)
-          PY
+          sed -i "s/^JWT_SECRET=.*/JWT_SECRET=$(python3 -c 'import secrets; print(secrets.token_hex(32))')/" .env
       - name: Build and start application
         run: docker compose up -d --build --wait
       - name: Integration tests

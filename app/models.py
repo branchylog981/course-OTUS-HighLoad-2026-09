@@ -30,7 +30,7 @@ class ProfileFields(BaseModel):
     @classmethod
     def no_null_bytes(cls, value: str) -> str:
         if "\x00" in value:
-            raise ValueError("Null bytes are not allowed")
+            raise ValueError("нулевые байты запрещены")
         return value
 
     @field_validator("birthdate", mode="before")
@@ -38,16 +38,16 @@ class ProfileFields(BaseModel):
     def date_format(cls, value: object) -> object:
         if isinstance(value, str):
             if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
-                raise ValueError("Use YYYY-MM-DD")
+                raise ValueError("дата должна быть в формате YYYY-MM-DD")
         elif type(value) is not date:
-            raise ValueError("Use YYYY-MM-DD")
+            raise ValueError("дата должна быть в формате YYYY-MM-DD")
         return value
 
     @field_validator("birthdate")
     @classmethod
     def valid_birthdate(cls, value: date) -> date:
         if not date(1900, 1, 1) <= value <= datetime.now(UTC).date():
-            raise ValueError("Birthdate must be between 1900-01-01 and today")
+            raise ValueError("дата рождения должна быть от 1900-01-01 до текущей даты")
         return value
 
 
