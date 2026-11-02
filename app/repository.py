@@ -4,6 +4,17 @@ from psycopg_pool import ConnectionPool
 
 from app.models import RegisterRequest
 
+SEARCH_SQL = """
+    SELECT id, first_name, second_name, birthdate, gender, biography, city
+    FROM users
+    WHERE first_name LIKE %s ESCAPE '!' AND second_name LIKE %s ESCAPE '!'
+    ORDER BY id
+"""
+
+
+def prefix_pattern(value: str) -> str:
+    return value.replace("!", "!!").replace("%", "!%").replace("_", "!_") + "%"
+
 
 class UserRepository:
     def __init__(self, pool: ConnectionPool):
@@ -47,3 +58,12 @@ class UserRepository:
                 "SELECT password_hash FROM users WHERE id = %s", (user_id,)
             ).fetchone()
         return row["password_hash"] if row else None
+
+    def search(self, first_name: str, last_name: str) -> list[dict]:
+        with self.pool.connection() as conn:
+            # A generic prepared plan cannot derive LIKE ranges from unknown prefixes.
+            return conn.execute(
+                SEARCH_SQL,
+                (prefix_pattern(first_name), prefix_pattern(last_name)),
+                prepare=False,
+            ).fetchall()

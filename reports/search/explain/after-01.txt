@@ -1,0 +1,16 @@
+{"first_name": "Алек", "last_name": "Иван"}
+
+Sort  (cost=5740.43..5743.87 rows=1375 width=176) (actual time=0.875..0.988 rows=1388 loops=1)
+  Sort Key: id
+  Sort Method: quicksort  Memory: 318kB
+  Buffers: shared hit=659
+  ->  Bitmap Heap Scan on users  (cost=1131.25..5668.76 rows=1375 width=176) (actual time=0.462..0.710 rows=1388 loops=1)
+        Filter: (((first_name)::text ~~ 'Алек%'::text) AND ((second_name)::text ~~ 'Иван%'::text))
+        Heap Blocks: exact=598
+        Buffers: shared hit=659
+        ->  Bitmap Index Scan on idx_users_name_prefix  (cost=0.00..1130.91 rows=1370 width=0) (actual time=0.430..0.431 rows=1388 loops=1)
+              Index Cond: (((first_name)::text ~>=~ 'Алек'::text) AND ((first_name)::text ~<~ 'Алел'::text) AND ((second_name)::text ~>=~ 'Иван'::text) AND ((second_name)::text ~<~ 'Ивао'::text))
+              Buffers: shared hit=61
+Settings: max_parallel_workers_per_gather = '0'
+Planning Time: 0.075 ms
+Execution Time: 1.023 ms

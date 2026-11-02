@@ -5,7 +5,7 @@ from uuid import UUID
 
 import jwt
 import psycopg
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -20,6 +20,7 @@ from app.models import (
     Profile,
     RegisterRequest,
     RegisterResponse,
+    SearchParams,
 )
 from app.repository import UserRepository
 from app.security import Security
@@ -52,7 +53,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             yield
 
     app = FastAPI(
-        title="social network hw1",
+        title="social network",
         lifespan=lifespan,
         responses={400: {"model": ErrorResponse}, 503: {"model": ErrorResponse}},
     )
@@ -142,6 +143,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     def get_user(id: UUID, repo: Users):
         return find_profile(repo, id)
+
+    @app.get("/user/search", response_model=list[Profile], tags=["users"])
+    def search_users(params: Annotated[SearchParams, Query()], repo: Users):
+        return repo.search(params.first_name, params.last_name)
 
     @app.get(
         "/user/me",

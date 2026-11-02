@@ -54,6 +54,7 @@ services:
       - ./tests:/app/tests:ro
       - ./pyproject.toml:/app/pyproject.toml:ro
       - ./postman:/app/postman:ro
+      - ./benchmarks:/app/benchmarks:ro
     command: ["pytest", "-q", "-p", "no:cacheprovider"]
 
 volumes:

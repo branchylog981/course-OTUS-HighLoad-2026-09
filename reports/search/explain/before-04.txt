@@ -1,0 +1,13 @@
+{"first_name": "Роб", "last_name": "Абрам"}
+
+Sort  (cost=45468.94..45468.94 rows=1 width=176) (actual time=48.793..48.795 rows=7 loops=1)
+  Sort Key: id
+  Sort Method: quicksort  Memory: 26kB
+  Buffers: shared hit=2913 read=27556
+  ->  Seq Scan on users  (cost=0.00..45468.93 rows=1 width=176) (actual time=0.009..48.783 rows=7 loops=1)
+        Filter: (((first_name)::text ~~ 'Роб%'::text) AND ((second_name)::text ~~ 'Абрам%'::text))
+        Rows Removed by Filter: 999993
+        Buffers: shared hit=2913 read=27556
+Settings: max_parallel_workers_per_gather = '0'
+Planning Time: 0.151 ms
+Execution Time: 48.811 ms

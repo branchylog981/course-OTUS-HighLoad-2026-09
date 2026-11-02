@@ -26,8 +26,8 @@ jobs:
         run: docker compose --profile test run --build --rm tests
       - name: Lint and formatting
         run: |
-          docker compose --profile test run --rm tests ruff check --no-cache app tests
-          docker compose --profile test run --rm tests ruff format --check --no-cache app tests
+          docker compose --profile test run --rm tests ruff check --no-cache app tests benchmarks
+          docker compose --profile test run --rm tests ruff format --check --no-cache app tests benchmarks
       - name: Postman collection
         run: npx --yes newman@6.2.3 run postman/social-network.postman_collection.json -e postman/local.postman_environment.json
       - name: Container logs on failure

@@ -1,0 +1,8 @@
+[
+  {"first_name": "Алек", "last_name": "Иван"},
+  {"first_name": "Мар", "last_name": "Смир"},
+  {"first_name": "Иль", "last_name": "Петр"},
+  {"first_name": "Роб", "last_name": "Абрам"},
+  {"first_name": "Злат", "last_name": "Яшин"},
+  {"first_name": "Несуществующее", "last_name": "Имя"}
+]

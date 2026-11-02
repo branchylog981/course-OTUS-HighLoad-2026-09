@@ -1,0 +1,22 @@
+# Use with: docker compose -p social-benchmark -f compose.yaml -f compose.benchmark.yaml ...
+# Its database and volume are separate from the normal application.
+services:
+  db:
+    cpus: 2.0
+    mem_limit: 2g
+    command: ["postgres", "-c", "shared_buffers=512MB", "-c", "max_parallel_workers_per_gather=0"]
+  migrate:
+    command: ["python", "-m", "app.migrate", "--through", "001"]
+  app:
+    cpus: 2.0
+    mem_limit: 2g
+    ports: !override
+      - "127.0.0.1:8081:8080"
+    # Access logs would add unnecessary output during the load test.
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--no-access-log"]
+    volumes:
+      - ./benchmarks:/app/benchmarks:ro
+      - ./data:/data:ro
+      - ./reports/search:/reports
+    healthcheck:
+      disable: true

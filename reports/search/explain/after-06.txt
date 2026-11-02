@@ -1,0 +1,13 @@
+{"first_name": "Несуществующее", "last_name": "Имя"}
+
+Sort  (cost=8.47..8.47 rows=1 width=176) (actual time=0.006..0.006 rows=0 loops=1)
+  Sort Key: id
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=3
+  ->  Index Scan using idx_users_name_prefix on users  (cost=0.42..8.46 rows=1 width=176) (actual time=0.005..0.005 rows=0 loops=1)
+        Index Cond: (((first_name)::text ~>=~ 'Несуществующее'::text) AND ((first_name)::text ~<~ 'Несуществующеж'::text) AND ((second_name)::text ~>=~ 'Имя'::text) AND ((second_name)::text ~<~ 'Имѐ'::text))
+        Filter: (((first_name)::text ~~ 'Несуществующее%'::text) AND ((second_name)::text ~~ 'Имя%'::text))
+        Buffers: shared hit=3
+Settings: max_parallel_workers_per_gather = '0'
+Planning Time: 0.069 ms
+Execution Time: 0.012 ms

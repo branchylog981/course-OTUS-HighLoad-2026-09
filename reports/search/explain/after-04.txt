@@ -1,0 +1,13 @@
+{"first_name": "Роб", "last_name": "Абрам"}
+
+Sort  (cost=109.16..109.16 rows=1 width=176) (actual time=0.027..0.027 rows=7 loops=1)
+  Sort Key: id
+  Sort Method: quicksort  Memory: 26kB
+  Buffers: shared hit=14
+  ->  Index Scan using idx_users_name_prefix on users  (cost=0.42..109.14 rows=1 width=176) (actual time=0.009..0.024 rows=7 loops=1)
+        Index Cond: (((first_name)::text ~>=~ 'Роб'::text) AND ((first_name)::text ~<~ 'Ров'::text) AND ((second_name)::text ~>=~ 'Абрам'::text) AND ((second_name)::text ~<~ 'Абран'::text))
+        Filter: (((first_name)::text ~~ 'Роб%'::text) AND ((second_name)::text ~~ 'Абрам%'::text))
+        Buffers: shared hit=14
+Settings: max_parallel_workers_per_gather = '0'
+Planning Time: 0.070 ms
+Execution Time: 0.034 ms

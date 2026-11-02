@@ -1,0 +1,13 @@
+{"first_name": "Несуществующее", "last_name": "Имя"}
+
+Sort  (cost=45468.94..45468.94 rows=1 width=176) (actual time=46.786..46.787 rows=0 loops=1)
+  Sort Key: id
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=3105 read=27364
+  ->  Seq Scan on users  (cost=0.00..45468.93 rows=1 width=176) (actual time=46.781..46.782 rows=0 loops=1)
+        Filter: (((first_name)::text ~~ 'Несуществующее%'::text) AND ((second_name)::text ~~ 'Имя%'::text))
+        Rows Removed by Filter: 1000000
+        Buffers: shared hit=3105 read=27364
+Settings: max_parallel_workers_per_gather = '0'
+Planning Time: 0.103 ms
+Execution Time: 46.802 ms

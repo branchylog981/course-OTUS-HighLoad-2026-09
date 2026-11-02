@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "bb44e18a-d475-4e52-9177-dda79f7ee5b4",
-    "name": "social network hw1",
-    "description": "Запускать по порядку, окружение Social Network Local. user_id и token сохраняются автоматически, каждый прогон создаёт двух пользователей.",
+    "name": "social network hw1–2",
+    "description": "Registration, login, profiles and two-prefix search. Run in order with the local environment. user_id and token are saved automatically.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -485,6 +485,97 @@
             "exec": [
               "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
               "pm.test(\"Table intact\", () => pm.expect(pm.response.json().first_name).to.eql(\"Иван\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "17. Поиск по двум префиксам и сортировка ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/user/search?first_name=%D0%98%D0%B2&last_name=%D0%9F%D0%B5%D1%82",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Both prefixes, own profile and sorted IDs\", () => { const rows = pm.response.json(); pm.expect(rows.some(p => p.id === pm.environment.get(\"user_id\"))).to.eql(true); rows.forEach(p => { pm.expect(p.first_name.startsWith(\"Ив\")).to.eql(true); pm.expect(p.second_name.startsWith(\"Пет\")).to.eql(true); pm.expect(p).not.to.have.property(\"password_hash\"); pm.expect(p).not.to.have.property(\"password\"); }); const ids = rows.map(p => p.id); pm.expect(ids).to.eql([...ids].sort()); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "18. Поиск без совпадений",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/user/search?first_name=NoSuchFirstName987&last_name=NoSuchLastName987",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Empty array\", () => pm.expect(pm.response.json()).to.eql([]));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "19. Поиск требует фамилию",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/user/search?first_name=%D0%98%D0%B2",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "20. Процент не является wildcard во вводе",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/user/search?first_name=%25&last_name=%25",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Literal percent\", () => pm.expect(pm.response.json()).to.eql([]));"
             ]
           }
         }

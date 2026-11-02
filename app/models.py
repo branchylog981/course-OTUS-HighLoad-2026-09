@@ -76,3 +76,17 @@ class LoginResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     message: str
+
+
+class SearchParams(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    first_name: ShortText
+    last_name: ShortText
+
+    @field_validator("first_name", "last_name")
+    @classmethod
+    def no_null_bytes(cls, value: str) -> str:
+        if "\x00" in value:
+            raise ValueError("нулевые байты запрещены")
+        return value
