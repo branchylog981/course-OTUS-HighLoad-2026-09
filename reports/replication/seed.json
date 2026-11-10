@@ -1,0 +1,99 @@
+{
+  "rows": 1000000,
+  "source_url": "https://raw.githubusercontent.com/OtusTeam/highload/master/homework/people.v2.csv",
+  "source_sha256": "7e67312e0a42c3377bd60248329ab5025b1bcfbd13848ffdff57770413bb1ec1",
+  "source_bytes": 59101184,
+  "valid_source_rows_first_pass": 999930,
+  "skipped_source_rows": 1,
+  "repeated_rows": 70,
+  "unique_first_names": 138,
+  "unique_last_names": 1006,
+  "top_first_names": [
+    [
+      "София",
+      37599
+    ],
+    [
+      "Мария",
+      29544
+    ],
+    [
+      "Александр",
+      28321
+    ],
+    [
+      "Анна",
+      26502
+    ],
+    [
+      "Максим",
+      24500
+    ],
+    [
+      "Михаил",
+      24332
+    ],
+    [
+      "Даниил",
+      23363
+    ],
+    [
+      "Артём",
+      23032
+    ],
+    [
+      "Виктория",
+      22776
+    ],
+    [
+      "Алиса",
+      22139
+    ]
+  ],
+  "top_last_names": [
+    [
+      "Иванова",
+      11814
+    ],
+    [
+      "Иванов",
+      11722
+    ],
+    [
+      "Смирнова",
+      8859
+    ],
+    [
+      "Смирнов",
+      8626
+    ],
+    [
+      "Кузнецова",
+      8320
+    ],
+    [
+      "Кузнецов",
+      8253
+    ],
+    [
+      "Попова",
+      6198
+    ],
+    [
+      "Попов",
+      6182
+    ],
+    [
+      "Петрова",
+      5794
+    ],
+    [
+      "Васильев",
+      5787
+    ]
+  ],
+  "id_algorithm": "UUIDv5(NAMESPACE_URL, 'otus-hw2-people-v2:<1-based-row>')",
+  "synthetic_accounts": "Login disabled; no shared plaintext password",
+  "loaded_at_utc": "2026-11-10T12:01:36.259743+00:00",
+  "load_seconds": 10.974
+}

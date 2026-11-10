@@ -3,6 +3,7 @@ from uuid import UUID, uuid4
 from psycopg_pool import ConnectionPool
 
 from app.models import RegisterRequest
+from app.routing import ReadRouter
 
 SEARCH_SQL = """
     SELECT id, first_name, second_name, birthdate, gender, biography, city
@@ -17,8 +18,14 @@ def prefix_pattern(value: str) -> str:
 
 
 class UserRepository:
-    def __init__(self, pool: ConnectionPool):
+    def __init__(self, pool: ConnectionPool, readers: ReadRouter | None = None):
         self.pool = pool
+        self.readers = readers
+
+    def read_connection(self):
+        if self.readers is not None:
+            return self.readers.connection()
+        return self.pool.connection()
 
     def create(self, user: RegisterRequest, password_hash: str) -> UUID:
         user_id = uuid4()
@@ -43,7 +50,7 @@ class UserRepository:
         return user_id
 
     def get_profile(self, user_id: UUID) -> dict | None:
-        with self.pool.connection() as conn:
+        with self.read_connection() as conn:
             return conn.execute(
                 """
                 SELECT id, first_name, second_name, birthdate, gender, biography, city
@@ -60,7 +67,7 @@ class UserRepository:
         return row["password_hash"] if row else None
 
     def search(self, first_name: str, last_name: str) -> list[dict]:
-        with self.pool.connection() as conn:
+        with self.read_connection() as conn:
             # A generic prepared plan cannot derive LIKE ranges from unknown prefixes.
             return conn.execute(
                 SEARCH_SQL,

@@ -1,0 +1,2011 @@
+{
+  "started_at_utc": "2026-11-10T12:04:52.300528+00:00",
+  "rows": 1000000,
+  "duration_s": 15,
+  "warmup_s": 3,
+  "repetitions": 3,
+  "concurrency": [
+    1,
+    10,
+    100
+  ],
+  "cases": [
+    {
+      "kind": "get",
+      "path": "/user/get/301fbd30-6146-5251-8129-ebd647204ac1"
+    },
+    {
+      "kind": "search",
+      "path": "/user/search",
+      "params": {
+        "first_name": "Алек",
+        "last_name": "Иван"
+      }
+    },
+    {
+      "kind": "search",
+      "path": "/user/search",
+      "params": {
+        "first_name": "Мар",
+        "last_name": "Смир"
+      }
+    },
+    {
+      "kind": "get",
+      "path": "/user/get/e456efdb-dad9-5ee0-bffb-2b421a388dcc"
+    },
+    {
+      "kind": "get",
+      "path": "/user/get/57c2fff9-8f5f-54c9-a965-2008c99874b7"
+    },
+    {
+      "kind": "search",
+      "path": "/user/search",
+      "params": {
+        "first_name": "Иль",
+        "last_name": "Петр"
+      }
+    },
+    {
+      "kind": "search",
+      "path": "/user/search",
+      "params": {
+        "first_name": "Роб",
+        "last_name": "Абрам"
+      }
+    },
+    {
+      "kind": "get",
+      "path": "/user/get/e22b7b2f-7343-5bdd-92f9-a699fa03d30f"
+    },
+    {
+      "kind": "get",
+      "path": "/user/get/246e38b0-128d-54ac-b877-421ef231d5e0"
+    },
+    {
+      "kind": "search",
+      "path": "/user/search",
+      "params": {
+        "first_name": "Злат",
+        "last_name": "Яшин"
+      }
+    },
+    {
+      "kind": "search",
+      "path": "/user/search",
+      "params": {
+        "first_name": "Несуществующее",
+        "last_name": "Имя"
+      }
+    },
+    {
+      "kind": "get",
+      "path": "/user/get/8c34d072-95ea-59ac-8f83-9205433f7b30"
+    }
+  ],
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "host_cpus": 12,
+  "docker": {
+    "ServerVersion": "29.9.2",
+    "NCPU": 12,
+    "MemTotal": 25200041984,
+    "OperatingSystem": "Docker Desktop",
+    "KernelVersion": "6.18.33.2-microsoft-standard-WSL2"
+  },
+  "source_revision": "38da650f22617aa272a0751586c4b9ce135da525",
+  "source_sha256": {
+    "app/__init__.py": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "app/api.py": "d9b13803d7567e7906c96747ffdfce81bdb369bc0b46bb65acbb36ca915eb5f6",
+    "app/config.py": "eca444dc8920ede1fd06da57d13770b8e2c4da93d7cdedf8d9e68e47c3881b1a",
+    "app/main.py": "951ac076b5bf8af1903f4173d46aab6d78a72d4dbd70f237bad0cf457c3aed83",
+    "app/migrate.py": "dc5e3c654483a5a40f682b69e04594d32df4f513f23bb74b9c7edae5e393358c",
+    "app/models.py": "b4ff2e4d44e307c25d36019845c7a16dba949691d2f08c8f2255d3760f2c095f",
+    "app/repository.py": "a8cadf71b4eadfabe5fa4ff0285bb4ad46d3da201b2e35020fb329a5b33d9834",
+    "app/routing.py": "6c6a0f1960a15cb27d1faf70cd3ea52fca0658fba7d8bead8343b2ddda053261",
+    "app/security.py": "78be014fc7dacef36a0adda3ce717cf56e89a0bfd26e4ba1d8a0046540ef949e",
+    "replication/__init__.py": "94b8cae7f2b0790bc769966a7969dce7acc5edf1870dbaad2131914af0ad3422",
+    "replication/common.py": "6771156d51e50b7909518048a17fe7f7e482de5b5660e89382eda4d6d767fd92",
+    "replication/failover.py": "345b1124a483366205f6d5c8f2c3329ebc1830f064ec2d9817c88bafa28edcea",
+    "replication/load.py": "1cf064319a0406bda68df6d762735d97cc516ac35f2a17f9c5bcc52e06a90c6d",
+    "replication/report.py": "ba4bce4903a0dda90f6b62970c518cc474c11486bf30cf3ed5a1a799fae7bfbc",
+    "replication/run.py": "2ca168741068e89bfc93a5b35d8439eb50360f51b2f4b0fc8c34c8e0a1da7619",
+    "replication/writer.py": "efc6b66bca0b0f57475b910c1d01bceef4afddc9af8e77bf11a95f714eb2fc61"
+  },
+  "resources": {
+    "each_db_cpus": 2,
+    "each_db_memory_gib": 2,
+    "app_cpus": 2,
+    "app_memory_gib": 2,
+    "total_read_pool_connections": 10,
+    "write_pool_connections": 10
+  },
+  "runs": [
+    {
+      "elapsed_s": 15.002542325000832,
+      "window_s": 15,
+      "concurrency": 1,
+      "client_cpu_percent_one_core": 7.232381948970372,
+      "endpoints": {
+        "get": {
+          "attempts": 2629,
+          "successes": 2629,
+          "errors": 0,
+          "rps": 175.23696604534354,
+          "p50_ms": 1.5911830014374573,
+          "p95_ms": 1.9927638015360571,
+          "p99_ms": 2.2110325202811505,
+          "statuses": {
+            "200": 2629
+          }
+        },
+        "search": {
+          "attempts": 2629,
+          "successes": 2629,
+          "errors": 0,
+          "rps": 175.23696604534354,
+          "p50_ms": 2.3264909996214556,
+          "p95_ms": 9.74012759870675,
+          "p99_ms": 11.090629679820266,
+          "statuses": {
+            "200": 2629
+          }
+        },
+        "total": {
+          "attempts": 5258,
+          "successes": 5258,
+          "errors": 0,
+          "rps": 350.4739320906871,
+          "p50_ms": 1.7391634992236504,
+          "p95_ms": 9.083925647792057,
+          "p99_ms": 10.365465760423842,
+          "statuses": {
+            "200": 5258
+          }
+        }
+      },
+      "stage": "master",
+      "repetition": 1,
+      "raw_file": "raw/master-c1-r1.csv.gz",
+      "counters_before": {
+        "master": {
+          "get": 27324,
+          "search": 27315,
+          "exec_ms": 15043.68874599994,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1461,
+          "search": 0,
+          "exec_ms": 17.796609999999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 0,
+          "search": 1461,
+          "exec_ms": 919.8242529999995,
+          "recovery": true
+        }
+      },
+      "counters_after": {
+        "master": {
+          "get": 29953,
+          "search": 29944,
+          "exec_ms": 16726.820944999963,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1461,
+          "search": 0,
+          "exec_ms": 17.796609999999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 0,
+          "search": 1461,
+          "exec_ms": 919.8242529999995,
+          "recovery": true
+        }
+      },
+      "sql_delta": {
+        "master": {
+          "get": 2629,
+          "search": 2629,
+          "exec_ms": 1683.1321990000233
+        },
+        "slave1": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        },
+        "slave2": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        }
+      }
+    },
+    {
+      "elapsed_s": 15.016494571002113,
+      "window_s": 15,
+      "concurrency": 10,
+      "client_cpu_percent_one_core": 7.978399168562064,
+      "endpoints": {
+        "get": {
+          "attempts": 2543,
+          "successes": 2543,
+          "errors": 0,
+          "rps": 169.34711280159274,
+          "p50_ms": 26.155575000302633,
+          "p95_ms": 36.69225739977266,
+          "p99_ms": 44.60393996057974,
+          "statuses": {
+            "200": 2543
+          }
+        },
+        "search": {
+          "attempts": 2543,
+          "successes": 2543,
+          "errors": 0,
+          "rps": 169.34711280159274,
+          "p50_ms": 29.626831001223763,
+          "p95_ms": 49.97702859873244,
+          "p99_ms": 59.68547436037625,
+          "statuses": {
+            "200": 2543
+          }
+        },
+        "total": {
+          "attempts": 5086,
+          "successes": 5086,
+          "errors": 0,
+          "rps": 338.6942256031855,
+          "p50_ms": 27.539941998838913,
+          "p95_ms": 46.821758751320885,
+          "p99_ms": 56.778863751787824,
+          "statuses": {
+            "200": 5086
+          }
+        }
+      },
+      "stage": "master",
+      "repetition": 1,
+      "raw_file": "raw/master-c10-r1.csv.gz",
+      "counters_before": {
+        "master": {
+          "get": 30463,
+          "search": 30454,
+          "exec_ms": 16979.676074999985,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1461,
+          "search": 0,
+          "exec_ms": 17.796609999999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 0,
+          "search": 1461,
+          "exec_ms": 919.8242529999995,
+          "recovery": true
+        }
+      },
+      "counters_after": {
+        "master": {
+          "get": 33006,
+          "search": 32997,
+          "exec_ms": 18204.38870499996,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1461,
+          "search": 0,
+          "exec_ms": 17.796609999999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 0,
+          "search": 1461,
+          "exec_ms": 919.8242529999995,
+          "recovery": true
+        }
+      },
+      "sql_delta": {
+        "master": {
+          "get": 2543,
+          "search": 2543,
+          "exec_ms": 1224.7126299999763
+        },
+        "slave1": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        },
+        "slave2": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        }
+      }
+    },
+    {
+      "elapsed_s": 15.255133132002811,
+      "window_s": 15,
+      "concurrency": 100,
+      "client_cpu_percent_one_core": 8.688434866684032,
+      "endpoints": {
+        "get": {
+          "attempts": 2235,
+          "successes": 2235,
+          "errors": 0,
+          "rps": 146.50806260820696,
+          "p50_ms": 330.9645340013958,
+          "p95_ms": 375.0682842011883,
+          "p99_ms": 396.2688365596841,
+          "statuses": {
+            "200": 2235
+          }
+        },
+        "search": {
+          "attempts": 2236,
+          "successes": 2236,
+          "errors": 0,
+          "rps": 146.5736143140719,
+          "p50_ms": 341.9005385003402,
+          "p95_ms": 400.15809274882486,
+          "p99_ms": 432.30431529846106,
+          "statuses": {
+            "200": 2236
+          }
+        },
+        "total": {
+          "attempts": 4471,
+          "successes": 4471,
+          "errors": 0,
+          "rps": 293.08167692227886,
+          "p50_ms": 335.43275999909383,
+          "p95_ms": 390.08275999913167,
+          "p99_ms": 418.9498866995566,
+          "statuses": {
+            "200": 4471
+          }
+        }
+      },
+      "stage": "master",
+      "repetition": 1,
+      "raw_file": "raw/master-c100-r1.csv.gz",
+      "counters_before": {
+        "master": {
+          "get": 33488,
+          "search": 33479,
+          "exec_ms": 18440.042428999976,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1461,
+          "search": 0,
+          "exec_ms": 17.796609999999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 0,
+          "search": 1461,
+          "exec_ms": 919.8242529999995,
+          "recovery": true
+        }
+      },
+      "counters_after": {
+        "master": {
+          "get": 35723,
+          "search": 35715,
+          "exec_ms": 19583.357861000015,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1461,
+          "search": 0,
+          "exec_ms": 17.796609999999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 0,
+          "search": 1461,
+          "exec_ms": 919.8242529999995,
+          "recovery": true
+        }
+      },
+      "sql_delta": {
+        "master": {
+          "get": 2235,
+          "search": 2236,
+          "exec_ms": 1143.3154320000394
+        },
+        "slave1": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        },
+        "slave2": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        }
+      }
+    },
+    {
+      "elapsed_s": 15.009744520000822,
+      "window_s": 15,
+      "concurrency": 1,
+      "client_cpu_percent_one_core": 7.099054268246413,
+      "endpoints": {
+        "get": {
+          "attempts": 2557,
+          "successes": 2557,
+          "errors": 0,
+          "rps": 170.3559975050035,
+          "p50_ms": 1.6426080001110677,
+          "p95_ms": 1.9928985988372003,
+          "p99_ms": 2.230267121194629,
+          "statuses": {
+            "200": 2557
+          }
+        },
+        "search": {
+          "attempts": 2557,
+          "successes": 2557,
+          "errors": 0,
+          "rps": 170.3559975050035,
+          "p50_ms": 2.364515999943251,
+          "p95_ms": 10.156975000427336,
+          "p99_ms": 11.50586343850592,
+          "statuses": {
+            "200": 2557
+          }
+        },
+        "total": {
+          "attempts": 5114,
+          "successes": 5114,
+          "errors": 0,
+          "rps": 340.711995010007,
+          "p50_ms": 1.7863540015241597,
+          "p95_ms": 9.570592399359157,
+          "p99_ms": 10.858902740219488,
+          "statuses": {
+            "200": 5114
+          }
+        }
+      },
+      "stage": "master",
+      "repetition": 2,
+      "raw_file": "raw/master-c1-r2.csv.gz",
+      "counters_before": {
+        "master": {
+          "get": 36200,
+          "search": 36192,
+          "exec_ms": 19913.53213200002,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1461,
+          "search": 0,
+          "exec_ms": 17.796609999999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 0,
+          "search": 1461,
+          "exec_ms": 919.8242529999995,
+          "recovery": true
+        }
+      },
+      "counters_after": {
+        "master": {
+          "get": 38757,
+          "search": 38749,
+          "exec_ms": 21595.561707000008,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1461,
+          "search": 0,
+          "exec_ms": 17.796609999999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 0,
+          "search": 1461,
+          "exec_ms": 919.8242529999995,
+          "recovery": true
+        }
+      },
+      "sql_delta": {
+        "master": {
+          "get": 2557,
+          "search": 2557,
+          "exec_ms": 1682.0295749999896
+        },
+        "slave1": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        },
+        "slave2": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        }
+      }
+    },
+    {
+      "elapsed_s": 15.023177562001365,
+      "window_s": 15,
+      "concurrency": 10,
+      "client_cpu_percent_one_core": 8.06928917665341,
+      "endpoints": {
+        "get": {
+          "attempts": 2501,
+          "successes": 2501,
+          "errors": 0,
+          "rps": 166.47609932574215,
+          "p50_ms": 26.853565002966207,
+          "p95_ms": 37.33765200013295,
+          "p99_ms": 48.110291001648875,
+          "statuses": {
+            "200": 2501
+          }
+        },
+        "search": {
+          "attempts": 2502,
+          "successes": 2502,
+          "errors": 0,
+          "rps": 166.54266313994677,
+          "p50_ms": 30.277800498879515,
+          "p95_ms": 51.949781001712836,
+          "p99_ms": 61.26642962848563,
+          "statuses": {
+            "200": 2502
+          }
+        },
+        "total": {
+          "attempts": 5003,
+          "successes": 5003,
+          "errors": 0,
+          "rps": 333.0187624656889,
+          "p50_ms": 28.155527001217706,
+          "p95_ms": 47.86067630193429,
+          "p99_ms": 56.956880217694554,
+          "statuses": {
+            "200": 5003
+          }
+        }
+      },
+      "stage": "master",
+      "repetition": 2,
+      "raw_file": "raw/master-c10-r2.csv.gz",
+      "counters_before": {
+        "master": {
+          "get": 39260,
+          "search": 39253,
+          "exec_ms": 21849.317452000018,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1461,
+          "search": 0,
+          "exec_ms": 17.796609999999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 0,
+          "search": 1461,
+          "exec_ms": 919.8242529999995,
+          "recovery": true
+        }
+      },
+      "counters_after": {
+        "master": {
+          "get": 41761,
+          "search": 41755,
+          "exec_ms": 23105.64657800003,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1461,
+          "search": 0,
+          "exec_ms": 17.796609999999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 0,
+          "search": 1461,
+          "exec_ms": 919.8242529999995,
+          "recovery": true
+        }
+      },
+      "sql_delta": {
+        "master": {
+          "get": 2501,
+          "search": 2502,
+          "exec_ms": 1256.3291260000115
+        },
+        "slave1": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        },
+        "slave2": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        }
+      }
+    },
+    {
+      "elapsed_s": 15.251666714997555,
+      "window_s": 15,
+      "concurrency": 100,
+      "client_cpu_percent_one_core": 8.503597378801024,
+      "endpoints": {
+        "get": {
+          "attempts": 2237,
+          "successes": 2237,
+          "errors": 0,
+          "rps": 146.67249434452114,
+          "p50_ms": 332.4966839973058,
+          "p95_ms": 363.090314000874,
+          "p99_ms": 373.28790451894747,
+          "statuses": {
+            "200": 2237
+          }
+        },
+        "search": {
+          "attempts": 2237,
+          "successes": 2237,
+          "errors": 0,
+          "rps": 146.67249434452114,
+          "p50_ms": 343.61529700254323,
+          "p95_ms": 393.6065606001648,
+          "p99_ms": 411.4430672807793,
+          "statuses": {
+            "200": 2237
+          }
+        },
+        "total": {
+          "attempts": 4474,
+          "successes": 4474,
+          "errors": 0,
+          "rps": 293.3449886890423,
+          "p50_ms": 336.90684500106727,
+          "p95_ms": 382.78128224956157,
+          "p99_ms": 404.30092021109886,
+          "statuses": {
+            "200": 4474
+          }
+        }
+      },
+      "stage": "master",
+      "repetition": 2,
+      "raw_file": "raw/master-c100-r2.csv.gz",
+      "counters_before": {
+        "master": {
+          "get": 42243,
+          "search": 42237,
+          "exec_ms": 23340.221237000034,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1461,
+          "search": 0,
+          "exec_ms": 17.796609999999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 0,
+          "search": 1461,
+          "exec_ms": 919.8242529999995,
+          "recovery": true
+        }
+      },
+      "counters_after": {
+        "master": {
+          "get": 44480,
+          "search": 44474,
+          "exec_ms": 24473.23311300002,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1461,
+          "search": 0,
+          "exec_ms": 17.796609999999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 0,
+          "search": 1461,
+          "exec_ms": 919.8242529999995,
+          "recovery": true
+        }
+      },
+      "sql_delta": {
+        "master": {
+          "get": 2237,
+          "search": 2237,
+          "exec_ms": 1133.011875999986
+        },
+        "slave1": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        },
+        "slave2": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        }
+      }
+    },
+    {
+      "elapsed_s": 15.001265351002075,
+      "window_s": 15,
+      "concurrency": 1,
+      "client_cpu_percent_one_core": 7.021532173148572,
+      "endpoints": {
+        "get": {
+          "attempts": 2540,
+          "successes": 2540,
+          "errors": 0,
+          "rps": 169.3190501313497,
+          "p50_ms": 1.6145395002240548,
+          "p95_ms": 2.019462050702714,
+          "p99_ms": 2.3207636499500963,
+          "statuses": {
+            "200": 2540
+          }
+        },
+        "search": {
+          "attempts": 2540,
+          "successes": 2540,
+          "errors": 0,
+          "rps": 169.3190501313497,
+          "p50_ms": 2.408604001175263,
+          "p95_ms": 10.291324000354507,
+          "p99_ms": 11.599413810254205,
+          "statuses": {
+            "200": 2540
+          }
+        },
+        "total": {
+          "attempts": 5080,
+          "successes": 5080,
+          "errors": 0,
+          "rps": 338.6381002626994,
+          "p50_ms": 1.7711649998091161,
+          "p95_ms": 9.794563449395355,
+          "p99_ms": 11.12838851106062,
+          "statuses": {
+            "200": 5080
+          }
+        }
+      },
+      "stage": "master",
+      "repetition": 3,
+      "raw_file": "raw/master-c1-r3.csv.gz",
+      "counters_before": {
+        "master": {
+          "get": 44979,
+          "search": 44973,
+          "exec_ms": 24815.400930000018,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1461,
+          "search": 0,
+          "exec_ms": 17.796609999999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 0,
+          "search": 1461,
+          "exec_ms": 919.8242529999995,
+          "recovery": true
+        }
+      },
+      "counters_after": {
+        "master": {
+          "get": 47519,
+          "search": 47513,
+          "exec_ms": 26505.26590800012,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1461,
+          "search": 0,
+          "exec_ms": 17.796609999999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 0,
+          "search": 1461,
+          "exec_ms": 919.8242529999995,
+          "recovery": true
+        }
+      },
+      "sql_delta": {
+        "master": {
+          "get": 2540,
+          "search": 2540,
+          "exec_ms": 1689.8649780001033
+        },
+        "slave1": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        },
+        "slave2": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        }
+      }
+    },
+    {
+      "elapsed_s": 15.017880954997963,
+      "window_s": 15,
+      "concurrency": 10,
+      "client_cpu_percent_one_core": 8.040308020940524,
+      "endpoints": {
+        "get": {
+          "attempts": 2467,
+          "successes": 2467,
+          "errors": 0,
+          "rps": 164.27084536044217,
+          "p50_ms": 27.0257619995391,
+          "p95_ms": 37.265906900211114,
+          "p99_ms": 48.768802418562785,
+          "statuses": {
+            "200": 2467
+          }
+        },
+        "search": {
+          "attempts": 2468,
+          "successes": 2468,
+          "errors": 0,
+          "rps": 164.33743265081932,
+          "p50_ms": 30.309352001495427,
+          "p95_ms": 52.65448670015758,
+          "p99_ms": 65.50635457999304,
+          "statuses": {
+            "200": 2468
+          }
+        },
+        "total": {
+          "attempts": 4935,
+          "successes": 4935,
+          "errors": 0,
+          "rps": 328.6082780112615,
+          "p50_ms": 28.463738999562338,
+          "p95_ms": 48.74239929740725,
+          "p99_ms": 60.62974497974209,
+          "statuses": {
+            "200": 4935
+          }
+        }
+      },
+      "stage": "master",
+      "repetition": 3,
+      "raw_file": "raw/master-c10-r3.csv.gz",
+      "counters_before": {
+        "master": {
+          "get": 48019,
+          "search": 48013,
+          "exec_ms": 26760.573915000146,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1461,
+          "search": 0,
+          "exec_ms": 17.796609999999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 0,
+          "search": 1461,
+          "exec_ms": 919.8242529999995,
+          "recovery": true
+        }
+      },
+      "counters_after": {
+        "master": {
+          "get": 50486,
+          "search": 50481,
+          "exec_ms": 28045.13196900021,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1461,
+          "search": 0,
+          "exec_ms": 17.796609999999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 0,
+          "search": 1461,
+          "exec_ms": 919.8242529999995,
+          "recovery": true
+        }
+      },
+      "sql_delta": {
+        "master": {
+          "get": 2467,
+          "search": 2468,
+          "exec_ms": 1284.5580540000628
+        },
+        "slave1": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        },
+        "slave2": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        }
+      }
+    },
+    {
+      "elapsed_s": 15.260306113999832,
+      "window_s": 15,
+      "concurrency": 100,
+      "client_cpu_percent_one_core": 8.537316914008622,
+      "endpoints": {
+        "get": {
+          "attempts": 2175,
+          "successes": 2175,
+          "errors": 0,
+          "rps": 142.52662979051587,
+          "p50_ms": 341.90710999973817,
+          "p95_ms": 375.2484073997038,
+          "p99_ms": 390.8999860610492,
+          "statuses": {
+            "200": 2175
+          }
+        },
+        "search": {
+          "attempts": 2175,
+          "successes": 2175,
+          "errors": 0,
+          "rps": 142.52662979051587,
+          "p50_ms": 353.0814289988484,
+          "p95_ms": 405.94642749892955,
+          "p99_ms": 430.4927972797304,
+          "statuses": {
+            "200": 2175
+          }
+        },
+        "total": {
+          "attempts": 4350,
+          "successes": 4350,
+          "errors": 0,
+          "rps": 285.05325958103174,
+          "p50_ms": 346.5924049996829,
+          "p95_ms": 395.5701175991635,
+          "p99_ms": 421.07331343991973,
+          "statuses": {
+            "200": 4350
+          }
+        }
+      },
+      "stage": "master",
+      "repetition": 3,
+      "raw_file": "raw/master-c100-r3.csv.gz",
+      "counters_before": {
+        "master": {
+          "get": 50961,
+          "search": 50956,
+          "exec_ms": 28285.679509000212,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1461,
+          "search": 0,
+          "exec_ms": 17.796609999999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 0,
+          "search": 1461,
+          "exec_ms": 919.8242529999995,
+          "recovery": true
+        }
+      },
+      "counters_after": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1461,
+          "search": 0,
+          "exec_ms": 17.796609999999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 0,
+          "search": 1461,
+          "exec_ms": 919.8242529999995,
+          "recovery": true
+        }
+      },
+      "sql_delta": {
+        "master": {
+          "get": 2175,
+          "search": 2175,
+          "exec_ms": 1125.341328000024
+        },
+        "slave1": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        },
+        "slave2": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        }
+      }
+    },
+    {
+      "elapsed_s": 15.001836502000515,
+      "window_s": 15,
+      "concurrency": 1,
+      "client_cpu_percent_one_core": 6.858754798872723,
+      "endpoints": {
+        "get": {
+          "attempts": 2397,
+          "successes": 2397,
+          "errors": 0,
+          "rps": 159.78043752712256,
+          "p50_ms": 1.7997110007854644,
+          "p95_ms": 2.1725412014347967,
+          "p99_ms": 2.466279758955352,
+          "statuses": {
+            "200": 2397
+          }
+        },
+        "search": {
+          "attempts": 2397,
+          "successes": 2397,
+          "errors": 0,
+          "rps": 159.78043752712256,
+          "p50_ms": 2.555004000896588,
+          "p95_ms": 10.321215000294615,
+          "p99_ms": 11.488426201976834,
+          "statuses": {
+            "200": 2397
+          }
+        },
+        "total": {
+          "attempts": 4794,
+          "successes": 4794,
+          "errors": 0,
+          "rps": 319.5608750542451,
+          "p50_ms": 1.9540510002116207,
+          "p95_ms": 9.807479450682875,
+          "p99_ms": 10.885982041072555,
+          "statuses": {
+            "200": 4794
+          }
+        }
+      },
+      "stage": "replicas",
+      "repetition": 1,
+      "raw_file": "raw/replicas-c1-r1.csv.gz",
+      "counters_before": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 1705,
+          "search": 243,
+          "exec_ms": 141.07517200000004,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 243,
+          "search": 1705,
+          "exec_ms": 1130.4656550000004,
+          "recovery": true
+        }
+      },
+      "counters_after": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 2904,
+          "search": 1441,
+          "exec_ms": 760.6962549999993,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 1441,
+          "search": 2904,
+          "exec_ms": 2149.122848999999,
+          "recovery": true
+        }
+      },
+      "sql_delta": {
+        "master": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        },
+        "slave1": {
+          "get": 1199,
+          "search": 1198,
+          "exec_ms": 619.6210829999992
+        },
+        "slave2": {
+          "get": 1198,
+          "search": 1199,
+          "exec_ms": 1018.6571939999985
+        }
+      }
+    },
+    {
+      "elapsed_s": 15.010952053999063,
+      "window_s": 15,
+      "concurrency": 10,
+      "client_cpu_percent_one_core": 7.258615949743993,
+      "endpoints": {
+        "get": {
+          "attempts": 2149,
+          "successes": 2149,
+          "errors": 0,
+          "rps": 143.1621387017545,
+          "p50_ms": 31.172495997452643,
+          "p95_ms": 42.29492219965322,
+          "p99_ms": 55.2553089603316,
+          "statuses": {
+            "200": 2149
+          }
+        },
+        "search": {
+          "attempts": 2148,
+          "successes": 2148,
+          "errors": 0,
+          "rps": 143.0955206753693,
+          "p50_ms": 34.77233449848427,
+          "p95_ms": 58.96742604963947,
+          "p99_ms": 70.7424803495815,
+          "statuses": {
+            "200": 2148
+          }
+        },
+        "total": {
+          "attempts": 4297,
+          "successes": 4297,
+          "errors": 0,
+          "rps": 286.2576593771238,
+          "p50_ms": 32.67365300052916,
+          "p95_ms": 55.598744198505294,
+          "p99_ms": 64.87682723993201,
+          "statuses": {
+            "200": 4297
+          }
+        }
+      },
+      "stage": "replicas",
+      "repetition": 1,
+      "raw_file": "raw/replicas-c10-r1.csv.gz",
+      "counters_before": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 3120,
+          "search": 1660,
+          "exec_ms": 880.1280389999996,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 1660,
+          "search": 3119,
+          "exec_ms": 2286.4887219999964,
+          "recovery": true
+        }
+      },
+      "counters_after": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 4198,
+          "search": 2730,
+          "exec_ms": 1487.9952800000003,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 2731,
+          "search": 4197,
+          "exec_ms": 2833.4644459999927,
+          "recovery": true
+        }
+      },
+      "sql_delta": {
+        "master": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        },
+        "slave1": {
+          "get": 1078,
+          "search": 1070,
+          "exec_ms": 607.8672410000007
+        },
+        "slave2": {
+          "get": 1071,
+          "search": 1078,
+          "exec_ms": 546.9757239999963
+        }
+      }
+    },
+    {
+      "elapsed_s": 15.269762658001127,
+      "window_s": 15,
+      "concurrency": 100,
+      "client_cpu_percent_one_core": 7.698322851036894,
+      "endpoints": {
+        "get": {
+          "attempts": 1953,
+          "successes": 1953,
+          "errors": 0,
+          "rps": 127.89982685006942,
+          "p50_ms": 374.600883002131,
+          "p95_ms": 466.47875260096043,
+          "p99_ms": 500.94411327998387,
+          "statuses": {
+            "200": 1953
+          }
+        },
+        "search": {
+          "attempts": 1954,
+          "successes": 1954,
+          "errors": 0,
+          "rps": 127.96531575270643,
+          "p50_ms": 390.0848569992377,
+          "p95_ms": 491.6630700490714,
+          "p99_ms": 517.5332514607362,
+          "statuses": {
+            "200": 1954
+          }
+        },
+        "total": {
+          "attempts": 3907,
+          "successes": 3907,
+          "errors": 0,
+          "rps": 255.86514260277585,
+          "p50_ms": 384.9438810029824,
+          "p95_ms": 479.9364795995643,
+          "p99_ms": 514.252759437295,
+          "statuses": {
+            "200": 3907
+          }
+        }
+      },
+      "stage": "replicas",
+      "repetition": 1,
+      "raw_file": "raw/replicas-c100-r1.csv.gz",
+      "counters_before": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 4421,
+          "search": 2937,
+          "exec_ms": 1585.7648210000018,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 2938,
+          "search": 4420,
+          "exec_ms": 2962.902394999995,
+          "recovery": true
+        }
+      },
+      "counters_after": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 5394,
+          "search": 3918,
+          "exec_ms": 2081.8714930000015,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 3918,
+          "search": 5393,
+          "exec_ms": 3508.5872389999927,
+          "recovery": true
+        }
+      },
+      "sql_delta": {
+        "master": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        },
+        "slave1": {
+          "get": 973,
+          "search": 981,
+          "exec_ms": 496.10667199999966
+        },
+        "slave2": {
+          "get": 980,
+          "search": 973,
+          "exec_ms": 545.6848439999976
+        }
+      }
+    },
+    {
+      "elapsed_s": 15.001679785000306,
+      "window_s": 15,
+      "concurrency": 1,
+      "client_cpu_percent_one_core": 6.77987585108275,
+      "endpoints": {
+        "get": {
+          "attempts": 2355,
+          "successes": 2355,
+          "errors": 0,
+          "rps": 156.98242021901362,
+          "p50_ms": 1.796644999558339,
+          "p95_ms": 2.234726099777617,
+          "p99_ms": 2.5363788599497643,
+          "statuses": {
+            "200": 2355
+          }
+        },
+        "search": {
+          "attempts": 2354,
+          "successes": 2354,
+          "errors": 0,
+          "rps": 156.9157610172221,
+          "p50_ms": 2.594297000541701,
+          "p95_ms": 10.770930899707308,
+          "p99_ms": 12.80417735168156,
+          "statuses": {
+            "200": 2354
+          }
+        },
+        "total": {
+          "attempts": 4709,
+          "successes": 4709,
+          "errors": 0,
+          "rps": 313.89818123623576,
+          "p50_ms": 1.973332000488881,
+          "p95_ms": 10.125878601684233,
+          "p99_ms": 11.446519322344102,
+          "statuses": {
+            "200": 4709
+          }
+        }
+      },
+      "stage": "replicas",
+      "repetition": 2,
+      "raw_file": "raw/replicas-c1-r2.csv.gz",
+      "counters_before": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 5631,
+          "search": 4156,
+          "exec_ms": 2288.9070330000013,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 4156,
+          "search": 5630,
+          "exec_ms": 3632.291986999997,
+          "recovery": true
+        }
+      },
+      "counters_after": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 6808,
+          "search": 5333,
+          "exec_ms": 3311.761308999997,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 5334,
+          "search": 6807,
+          "exec_ms": 4240.876075000001,
+          "recovery": true
+        }
+      },
+      "sql_delta": {
+        "master": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        },
+        "slave1": {
+          "get": 1177,
+          "search": 1177,
+          "exec_ms": 1022.8542759999955
+        },
+        "slave2": {
+          "get": 1178,
+          "search": 1177,
+          "exec_ms": 608.5840880000042
+        }
+      }
+    },
+    {
+      "elapsed_s": 15.025613010999223,
+      "window_s": 15,
+      "concurrency": 10,
+      "client_cpu_percent_one_core": 7.367038331079639,
+      "endpoints": {
+        "get": {
+          "attempts": 2117,
+          "successes": 2117,
+          "errors": 0,
+          "rps": 140.89275415587298,
+          "p50_ms": 31.667317998653743,
+          "p95_ms": 44.030229400232194,
+          "p99_ms": 54.39358207921033,
+          "statuses": {
+            "200": 2117
+          }
+        },
+        "search": {
+          "attempts": 2117,
+          "successes": 2117,
+          "errors": 0,
+          "rps": 140.89275415587298,
+          "p50_ms": 35.71659500084934,
+          "p95_ms": 60.44552120001752,
+          "p99_ms": 72.29877979872997,
+          "statuses": {
+            "200": 2117
+          }
+        },
+        "total": {
+          "attempts": 4234,
+          "successes": 4234,
+          "errors": 0,
+          "rps": 281.78550831174596,
+          "p50_ms": 33.29987149845692,
+          "p95_ms": 55.93684034956823,
+          "p99_ms": 66.76226892039267,
+          "statuses": {
+            "200": 4234
+          }
+        }
+      },
+      "stage": "replicas",
+      "repetition": 2,
+      "raw_file": "raw/replicas-c10-r2.csv.gz",
+      "counters_before": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 7016,
+          "search": 5563,
+          "exec_ms": 3417.0348019999974,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 5563,
+          "search": 7015,
+          "exec_ms": 4362.332582,
+          "recovery": true
+        }
+      },
+      "counters_after": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 8109,
+          "search": 6587,
+          "exec_ms": 4001.324418999997,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 6587,
+          "search": 8108,
+          "exec_ms": 4928.574771000007,
+          "recovery": true
+        }
+      },
+      "sql_delta": {
+        "master": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        },
+        "slave1": {
+          "get": 1093,
+          "search": 1024,
+          "exec_ms": 584.2896169999995
+        },
+        "slave2": {
+          "get": 1024,
+          "search": 1093,
+          "exec_ms": 566.2421890000069
+        }
+      }
+    },
+    {
+      "elapsed_s": 15.289493885000411,
+      "window_s": 15,
+      "concurrency": 100,
+      "client_cpu_percent_one_core": 7.724890064272836,
+      "endpoints": {
+        "get": {
+          "attempts": 1955,
+          "successes": 1955,
+          "errors": 0,
+          "rps": 127.86557977029777,
+          "p50_ms": 384.1471960004128,
+          "p95_ms": 476.2622188009118,
+          "p99_ms": 503.8198907389597,
+          "statuses": {
+            "200": 1955
+          }
+        },
+        "search": {
+          "attempts": 1955,
+          "successes": 1955,
+          "errors": 0,
+          "rps": 127.86557977029777,
+          "p50_ms": 392.87896099995123,
+          "p95_ms": 493.3077579993551,
+          "p99_ms": 524.2096951790882,
+          "statuses": {
+            "200": 1955
+          }
+        },
+        "total": {
+          "attempts": 3910,
+          "successes": 3910,
+          "errors": 0,
+          "rps": 255.73115954059554,
+          "p50_ms": 388.52022249739093,
+          "p95_ms": 487.41880759898777,
+          "p99_ms": 516.1458682590091,
+          "statuses": {
+            "200": 3910
+          }
+        }
+      },
+      "stage": "replicas",
+      "repetition": 2,
+      "raw_file": "raw/replicas-c100-r2.csv.gz",
+      "counters_before": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 8307,
+          "search": 6814,
+          "exec_ms": 4127.996099999996,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 6814,
+          "search": 8307,
+          "exec_ms": 5030.83167200001,
+          "recovery": true
+        }
+      },
+      "counters_after": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 9286,
+          "search": 7790,
+          "exec_ms": 4616.205249999982,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 7790,
+          "search": 9286,
+          "exec_ms": 5593.8264350000245,
+          "recovery": true
+        }
+      },
+      "sql_delta": {
+        "master": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        },
+        "slave1": {
+          "get": 979,
+          "search": 976,
+          "exec_ms": 488.20914999998604
+        },
+        "slave2": {
+          "get": 976,
+          "search": 979,
+          "exec_ms": 562.9947630000142
+        }
+      }
+    },
+    {
+      "elapsed_s": 15.003594617999624,
+      "window_s": 15,
+      "concurrency": 1,
+      "client_cpu_percent_one_core": 6.5962604042413755,
+      "endpoints": {
+        "get": {
+          "attempts": 2347,
+          "successes": 2347,
+          "errors": 0,
+          "rps": 156.42917979031063,
+          "p50_ms": 1.809415000025183,
+          "p95_ms": 2.277726001557312,
+          "p99_ms": 2.601165160303935,
+          "statuses": {
+            "200": 2347
+          }
+        },
+        "search": {
+          "attempts": 2348,
+          "successes": 2348,
+          "errors": 0,
+          "rps": 156.4958304847249,
+          "p50_ms": 2.5869679993775208,
+          "p95_ms": 10.812425301264739,
+          "p99_ms": 12.222779450676187,
+          "statuses": {
+            "200": 2348
+          }
+        },
+        "total": {
+          "attempts": 4695,
+          "successes": 4695,
+          "errors": 0,
+          "rps": 312.9250102750355,
+          "p50_ms": 1.988391999475425,
+          "p95_ms": 10.261509600604768,
+          "p99_ms": 11.477222540634106,
+          "statuses": {
+            "200": 4695
+          }
+        }
+      },
+      "stage": "replicas",
+      "repetition": 3,
+      "raw_file": "raw/replicas-c1-r3.csv.gz",
+      "counters_before": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 9521,
+          "search": 8024,
+          "exec_ms": 4739.144971999984,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 8024,
+          "search": 9521,
+          "exec_ms": 5800.7976130000225,
+          "recovery": true
+        }
+      },
+      "counters_after": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 10695,
+          "search": 9198,
+          "exec_ms": 5353.05728999998,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 9197,
+          "search": 10695,
+          "exec_ms": 6843.216923000025,
+          "recovery": true
+        }
+      },
+      "sql_delta": {
+        "master": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        },
+        "slave1": {
+          "get": 1174,
+          "search": 1174,
+          "exec_ms": 613.912317999996
+        },
+        "slave2": {
+          "get": 1173,
+          "search": 1174,
+          "exec_ms": 1042.419310000003
+        }
+      }
+    },
+    {
+      "elapsed_s": 15.014692376000312,
+      "window_s": 15,
+      "concurrency": 10,
+      "client_cpu_percent_one_core": 7.212826469432384,
+      "endpoints": {
+        "get": {
+          "attempts": 2147,
+          "successes": 2147,
+          "errors": 0,
+          "rps": 142.9932726048916,
+          "p50_ms": 31.364944003144046,
+          "p95_ms": 41.630035700654844,
+          "p99_ms": 51.80265368115215,
+          "statuses": {
+            "200": 2147
+          }
+        },
+        "search": {
+          "attempts": 2148,
+          "successes": 2148,
+          "errors": 0,
+          "rps": 143.05987403600705,
+          "p50_ms": 35.28982400166569,
+          "p95_ms": 59.49384625037054,
+          "p99_ms": 69.64182965904911,
+          "statuses": {
+            "200": 2148
+          }
+        },
+        "total": {
+          "attempts": 4295,
+          "successes": 4295,
+          "errors": 0,
+          "rps": 286.05314664089866,
+          "p50_ms": 32.90509699945687,
+          "p95_ms": 54.48479120168486,
+          "p99_ms": 65.78180752178014,
+          "statuses": {
+            "200": 4295
+          }
+        }
+      },
+      "stage": "replicas",
+      "repetition": 3,
+      "raw_file": "raw/replicas-c10-r3.csv.gz",
+      "counters_before": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 10909,
+          "search": 9419,
+          "exec_ms": 5476.665276999975,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 9418,
+          "search": 10910,
+          "exec_ms": 6949.011376000027,
+          "recovery": true
+        }
+      },
+      "counters_after": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 11975,
+          "search": 10501,
+          "exec_ms": 6018.540664999971,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 10499,
+          "search": 11976,
+          "exec_ms": 7552.28873000004,
+          "recovery": true
+        }
+      },
+      "sql_delta": {
+        "master": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        },
+        "slave1": {
+          "get": 1066,
+          "search": 1082,
+          "exec_ms": 541.8753879999967
+        },
+        "slave2": {
+          "get": 1081,
+          "search": 1066,
+          "exec_ms": 603.2773540000135
+        }
+      }
+    },
+    {
+      "elapsed_s": 15.300752076000208,
+      "window_s": 15,
+      "concurrency": 100,
+      "client_cpu_percent_one_core": 7.651185491961985,
+      "endpoints": {
+        "get": {
+          "attempts": 1965,
+          "successes": 1965,
+          "errors": 0,
+          "rps": 128.42505977743244,
+          "p50_ms": 378.63490900053876,
+          "p95_ms": 475.1691384022706,
+          "p99_ms": 493.10034984053345,
+          "statuses": {
+            "200": 1965
+          }
+        },
+        "search": {
+          "attempts": 1966,
+          "successes": 1966,
+          "errors": 0,
+          "rps": 128.4904160419502,
+          "p50_ms": 386.6700674989261,
+          "p95_ms": 492.6416464995782,
+          "p99_ms": 524.816629351335,
+          "statuses": {
+            "200": 1966
+          }
+        },
+        "total": {
+          "attempts": 3931,
+          "successes": 3931,
+          "errors": 0,
+          "rps": 256.9154758193826,
+          "p50_ms": 382.36344200049643,
+          "p95_ms": 483.0411590010044,
+          "p99_ms": 514.549083199381,
+          "statuses": {
+            "200": 3931
+          }
+        }
+      },
+      "stage": "replicas",
+      "repetition": 3,
+      "raw_file": "raw/replicas-c100-r3.csv.gz",
+      "counters_before": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 12187,
+          "search": 10710,
+          "exec_ms": 6134.331891999981,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 10708,
+          "search": 12188,
+          "exec_ms": 7661.098203000041,
+          "recovery": true
+        }
+      },
+      "counters_after": {
+        "master": {
+          "get": 53136,
+          "search": 53131,
+          "exec_ms": 29411.020837000236,
+          "recovery": false
+        },
+        "slave1": {
+          "get": 13185,
+          "search": 11677,
+          "exec_ms": 6697.616281999971,
+          "recovery": true
+        },
+        "slave2": {
+          "get": 11675,
+          "search": 13187,
+          "exec_ms": 8157.689249000034,
+          "recovery": true
+        }
+      },
+      "sql_delta": {
+        "master": {
+          "get": 0,
+          "search": 0,
+          "exec_ms": 0.0
+        },
+        "slave1": {
+          "get": 998,
+          "search": 967,
+          "exec_ms": 563.2843899999898
+        },
+        "slave2": {
+          "get": 967,
+          "search": 999,
+          "exec_ms": 496.5910459999923
+        }
+      }
+    }
+  ],
+  "body_sha256": [
+    "6db4a550b79562addea4f5e455a629c365f3133603b25f11965f11a1149e9864",
+    "afb9991acaa3a9382071c85c4fdafc22a32b3fff049ca9d5c561d00dac989bc1",
+    "abef963e8ac728455a56745e2ff8f23848a1b76dfac70e22cee21be51462946d",
+    "299b8e28579fc837795d067e48b96ac6c4cf2837c51c9ed94143c6d1d0357206",
+    "f8c8449602d93ea4aee3b97538043b27342480b1a8505105714a5fbe9d9c7dab",
+    "1db383d99ac4e6ce882162327caaa2f05fb80dfa2cf2acbf751cf7dbdce7d2c7",
+    "913987e71e6bc5e6741edbb1a6eb6cd37d3e138d6a45702fbd1e25f8127f7567",
+    "86114487ec6891e8521a3420a7249445b4e70c782fc673cc5e3919a9fb0edbf6",
+    "1e5591601b0c26388add81442b3813747c3b712963a913b1a9df053ffccced6e",
+    "7aee4b23a4c18361312c6900cefeeb7300bc62ca91487583d6ed2cf3f47613dd",
+    "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "dbc5f9031533c719ecc39083762a91b7d424d921392f455cbb7e4bf27e45ab0d"
+  ],
+  "finished_at_utc": "2026-11-10T12:10:44.166356+00:00"
+}

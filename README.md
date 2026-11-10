@@ -1,4 +1,7 @@
-# Социальная сеть (ДЗ 1–2)
+# Социальная сеть (ДЗ 1–3)
+
+**ДЗ №3:** [отчёт: репликация, нагрузка, авария master](reports/replication/REPORT.md).
+Запуск стенда и повторение экспериментов — [replication/README.md](replication/README.md).
 
 **ДЗ №2:** [отчёт: миллион анкет, поиск и нагрузка до/после индекса](reports/search/REPORT.md).
 Воспроизведение замеров — [benchmarks/README.md](benchmarks/README.md).
@@ -134,4 +137,6 @@ python3 -m venv .venv
 Соединения — из пула psycopg_pool. В ДЗ №2 добавлен индекс
 `(first_name varchar_pattern_ops, second_name varchar_pattern_ops)` для поиска.
 Обычный запуск применяет обе миграции; benchmark откладывает индекс до второй фазы.
-Репликации, шардирования и кэширования данных в приложении нет — это монолит.
+Для ДЗ №3 добавлен отдельный `compose.replication.yaml`: master и две физические
+реплики PostgreSQL, READ ONLY маршрутизация двух GET API. Обычный compose
+сохраняет запуск с одной БД. Шардирование и кэширование не используются.

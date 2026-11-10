@@ -1,5 +1,5 @@
 import logging
-from contextlib import asynccontextmanager
+from contextlib import ExitStack, asynccontextmanager
 from typing import Annotated
 from uuid import UUID
 
@@ -23,6 +23,7 @@ from app.models import (
     SearchParams,
 )
 from app.repository import UserRepository
+from app.routing import ReadRouter
 from app.security import Security
 
 logger = logging.getLogger(__name__)
@@ -42,15 +43,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             kwargs={
                 "row_factory": dict_row,
                 "connect_timeout": 5,
+                "application_name": "social-writer",
                 "options": "-c statement_timeout=5000",
             },
             open=False,
         ) as pool:
             pool.wait(timeout=10)
             app.state.pool = pool
-            app.state.users = UserRepository(pool)
-            app.state.security = Security(settings)
-            yield
+            with ExitStack() as stack:
+                readers = stack.enter_context(ReadRouter(settings)) if settings.read_hosts else None
+                app.state.users = UserRepository(pool, readers)
+                app.state.security = Security(settings)
+                yield
 
     app = FastAPI(
         title="social network",

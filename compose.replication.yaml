@@ -1,0 +1,104 @@
+name: social-replication
+
+x-db: &db
+  image: postgres:17-bookworm
+  environment: &db-env
+    POSTGRES_DB: ${POSTGRES_DB:-social}
+    POSTGRES_USER: ${POSTGRES_USER:-social}
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    REPLICATION_PASSWORD: ${REPLICATION_PASSWORD:-replication-lab-only}
+  cpus: 2.0
+  mem_limit: 2g
+  command: ["postgres", "-c", "wal_level=replica", "-c", "max_wal_senders=10", "-c", "max_replication_slots=10", "-c", "wal_keep_size=512MB", "-c", "hot_standby=on", "-c", "wal_sender_timeout=5s", "-c", "wal_receiver_timeout=5s", "-c", "shared_buffers=256MB", "-c", "max_parallel_workers_per_gather=0", "-c", "shared_preload_libraries=pg_stat_statements", "-c", "pg_stat_statements.track=all"]
+  healthcheck:
+    test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+    interval: 2s
+    timeout: 3s
+    retries: 60
+
+services:
+  master:
+    <<: *db
+    volumes:
+      - repl_master:/var/lib/postgresql/data
+      - ./replication/init-primary.sh:/docker-entrypoint-initdb.d/replication.sh:ro
+  slave1:
+    <<: *db
+    environment:
+      <<: *db-env
+      REPLICA_NAME: slave1
+    entrypoint: ["bash", "/replication/standby.sh"]
+    volumes:
+      - repl_slave1:/var/lib/postgresql/data
+      - ./replication/standby.sh:/replication/standby.sh:ro
+    depends_on:
+      master:
+        condition: service_healthy
+  slave2:
+    <<: *db
+    environment:
+      <<: *db-env
+      REPLICA_NAME: slave2
+    entrypoint: ["bash", "/replication/standby.sh"]
+    volumes:
+      - repl_slave2:/var/lib/postgresql/data
+      - ./replication/standby.sh:/replication/standby.sh:ro
+    depends_on:
+      master:
+        condition: service_healthy
+  migrate:
+    build: .
+    environment: &app-env
+      PGHOST: ${PRIMARY_HOST:-master}
+      PGPORT: "5432"
+      PGDATABASE: ${POSTGRES_DB:-social}
+      PGUSER: ${POSTGRES_USER:-social}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      READ_HOSTS: '${READ_HOSTS:-["slave1","slave2"]}'
+    command: ["python", "-m", "app.migrate"]
+    depends_on:
+      master:
+        condition: service_healthy
+  app:
+    build: .
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    cpus: 2.0
+    mem_limit: 2g
+    environment: *app-env
+    ports:
+      - "127.0.0.1:${REPLICATION_APP_PORT:-8082}:8080"
+    volumes:
+      - ./replication:/app/replication:ro
+      - ./benchmarks:/app/benchmarks:ro
+      - ./data:/data:ro
+      - ./reports/replication:/reports
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--no-access-log"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      slave1:
+        condition: service_healthy
+      slave2:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health', timeout=2)"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+  tests:
+    build: .
+    profiles: ["test"]
+    environment: *app-env
+    volumes:
+      - ./tests:/app/tests:ro
+      - ./pyproject.toml:/app/pyproject.toml:ro
+      - ./postman:/app/postman:ro
+      - ./benchmarks:/app/benchmarks:ro
+      - ./replication:/app/replication:ro
+    command: ["pytest", "-q", "-p", "no:cacheprovider"]
+
+volumes:
+  repl_master:
+  repl_slave1:
+  repl_slave2:

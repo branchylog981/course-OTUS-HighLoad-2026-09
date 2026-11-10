@@ -1,0 +1,62 @@
+{
+  "master": {
+    "version": "PostgreSQL 17.11 (Debian 17.11-1.pgdg12+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit",
+    "recovery": false,
+    "wal_level": "replica",
+    "hot_standby": "on",
+    "wal_keep_size": "512MB",
+    "synchronous_standby_names": "",
+    "synchronous_commit": "on",
+    "users": 1000000,
+    "indexes": [
+      "CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)",
+      "CREATE INDEX idx_users_name_prefix ON public.users USING btree (first_name varchar_pattern_ops, second_name varchar_pattern_ops)"
+    ],
+    "replication": [
+      {
+        "application_name": "slave1",
+        "state": "streaming",
+        "sync_state": "async",
+        "flush_lsn": "0/1D1C47D8",
+        "replay_lsn": "0/1D1C47D8"
+      },
+      {
+        "application_name": "slave2",
+        "state": "streaming",
+        "sync_state": "async",
+        "flush_lsn": "0/1D1C47D8",
+        "replay_lsn": "0/1D1C47D8"
+      }
+    ]
+  },
+  "slave1": {
+    "version": "PostgreSQL 17.11 (Debian 17.11-1.pgdg12+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit",
+    "recovery": true,
+    "wal_level": "replica",
+    "hot_standby": "on",
+    "wal_keep_size": "512MB",
+    "synchronous_standby_names": "",
+    "synchronous_commit": "on",
+    "users": 1000000,
+    "indexes": [
+      "CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)",
+      "CREATE INDEX idx_users_name_prefix ON public.users USING btree (first_name varchar_pattern_ops, second_name varchar_pattern_ops)"
+    ],
+    "replication": null
+  },
+  "slave2": {
+    "version": "PostgreSQL 17.11 (Debian 17.11-1.pgdg12+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit",
+    "recovery": true,
+    "wal_level": "replica",
+    "hot_standby": "on",
+    "wal_keep_size": "512MB",
+    "synchronous_standby_names": "",
+    "synchronous_commit": "on",
+    "users": 1000000,
+    "indexes": [
+      "CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)",
+      "CREATE INDEX idx_users_name_prefix ON public.users USING btree (first_name varchar_pattern_ops, second_name varchar_pattern_ops)"
+    ],
+    "replication": null
+  }
+}

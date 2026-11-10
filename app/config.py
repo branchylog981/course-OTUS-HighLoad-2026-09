@@ -7,6 +7,8 @@ class Settings(BaseSettings):
 
     # пустой DSN — тогда libpq возьмёт PGHOST/PGPORT/PGDATABASE/PGUSER/PGPASSWORD
     database_url: SecretStr = SecretStr("")
+    # Empty list keeps the single-database deployment working.
+    read_hosts: list[str] = Field(default_factory=list)
     jwt_secret: SecretStr
     token_ttl_seconds: int = Field(default=3600, ge=60, le=86400)
 

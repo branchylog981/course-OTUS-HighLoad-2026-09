@@ -1,0 +1,91 @@
+{
+  "mode": "quorum",
+  "run_id": "35a861fd-fc19-4462-b845-e5e6a3864a66",
+  "started_at_utc": "2026-11-10T12:15:18.914587+00:00",
+  "project": "social-replication-quorum",
+  "crash_signal": "SIGKILL",
+  "replication_before_crash": [
+    {
+      "application_name": "slave1",
+      "state": "streaming",
+      "sync_state": "quorum",
+      "sent_lsn": "0/4001CA8",
+      "write_lsn": "0/4001CA8",
+      "flush_lsn": "0/4001CA8",
+      "replay_lsn": "0/4001CA8"
+    },
+    {
+      "application_name": "slave2",
+      "state": "streaming",
+      "sync_state": "quorum",
+      "sent_lsn": "0/4001CA8",
+      "write_lsn": "0/4001CA8",
+      "flush_lsn": "0/4001CA8",
+      "replay_lsn": "0/4001CA8"
+    }
+  ],
+  "synchronous_standby_names": "ANY 1 (slave1, slave2)",
+  "synchronous_commit": "on",
+  "acked_before_crash": 403,
+  "primary_rows_before_crash": 417,
+  "crashed_at_utc": "2026-11-10T12:15:23.241013+00:00",
+  "read_during_primary_outage": 200,
+  "old_primary_running": false,
+  "candidates": {
+    "slave1": {
+      "recovery": true,
+      "receive_lsn": "0/4083788",
+      "replay_lsn": "0/4083788",
+      "read_only": "on"
+    },
+    "slave2": {
+      "recovery": true,
+      "receive_lsn": "0/4083788",
+      "replay_lsn": "0/4083788",
+      "read_only": "on"
+    }
+  },
+  "promoted": "slave1",
+  "follower": "slave2",
+  "attempts": 432,
+  "acknowledged_count": 429,
+  "persisted_count": 429,
+  "lost_acknowledged": [],
+  "persisted_without_ack": [],
+  "writer_errors": [
+    {
+      "seq": 430,
+      "type": "OperationalError"
+    },
+    {
+      "seq": 431,
+      "type": "ConnectionTimeout"
+    },
+    {
+      "seq": 432,
+      "type": "OperationalError"
+    }
+  ],
+  "writer_elapsed_s": 9.490481179000199,
+  "api_after_failover": {
+    "register": 200,
+    "get": 200,
+    "search": 200,
+    "login": 200
+  },
+  "final_roles": {
+    "slave1": {
+      "recovery": false,
+      "receive_lsn": "0/4083788",
+      "replay_lsn": "0/4083788",
+      "read_only": "off"
+    },
+    "slave2": {
+      "recovery": true,
+      "receive_lsn": "0/4083B38",
+      "replay_lsn": "0/4083B38",
+      "read_only": "on"
+    }
+  },
+  "finished_at_utc": "2026-11-10T12:15:44.010275+00:00"
+}
