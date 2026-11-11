@@ -61,10 +61,12 @@ def capture_cluster(lab):
 
 async def read_experiment(args):
     lab = Lab()
+    # Download the dataset before `up`: bind-mounting ./data creates it root-owned,
+    # and the host-side download could no longer write there (CI failure HW3).
+    ensure_dataset(ROOT / "data" / "people.v2.csv")
     lab.command("up", "-d", "--build", "--wait", "app")
     lab.ready()
     lab.streaming()
-    ensure_dataset(ROOT / "data" / "people.v2.csv")
     lab.command(
         "exec",
         "-T",
