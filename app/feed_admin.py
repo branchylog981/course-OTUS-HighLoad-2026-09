@@ -60,6 +60,9 @@ def main() -> None:
     args = parser.parse_args()
 
     settings = Settings()
+    redis_url = settings.redis_url.get_secret_value()
+    if args.command == "rebuild" and not redis_url:
+        parser.error("REDIS_URL is required to rebuild a feed")
     with ConnectionPool(
         settings.database_url.get_secret_value(),
         kwargs={"row_factory": dict_row, "connect_timeout": 5},
@@ -71,7 +74,7 @@ def main() -> None:
         if args.command == "seed":
             seed(pool, settings)
         else:
-            with redis_client(settings.redis_url.get_secret_value()) as cache:
+            with redis_client(redis_url) as cache:
                 count = FeedCache(pool, cache).rebuild(args.user_id)
             print(f"Cached {count} posts for {args.user_id}")
 

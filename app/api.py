@@ -5,7 +5,7 @@ from uuid import UUID
 
 import jwt
 import psycopg
-from fastapi import Depends, FastAPI, HTTPException, Query, Request, Response
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Query, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -38,6 +38,7 @@ bearer = HTTPBearer(auto_error=False)
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or Settings()
+    redis_url = settings.redis_url.get_secret_value()
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
@@ -59,9 +60,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             with ExitStack() as stack:
                 readers = stack.enter_context(ReadRouter(settings)) if settings.read_hosts else None
                 app.state.users = UserRepository(pool, readers)
-                app.state.posts = PostRepository(pool)
-                cache = stack.enter_context(redis_client(settings.redis_url.get_secret_value()))
-                app.state.feed = FeedCache(pool, cache)
+                if redis_url:
+                    cache = stack.enter_context(redis_client(redis_url))
+                    app.state.posts = PostRepository(pool)
+                    app.state.feed = FeedCache(pool, cache)
                 app.state.security = Security(settings)
                 yield
 
@@ -190,8 +192,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def get_me(user_id: CurrentUser, repo: Users):
         return find_profile(repo, user_id)
 
-    @app.put("/friend/add/{user_id}", tags=["friends"], responses=authenticated)
-    @app.put("/friend/set/{user_id}", tags=["friends"], responses=authenticated)
+    post_routes = APIRouter()
+
+    @post_routes.put("/friend/add/{user_id}", tags=["friends"], responses=authenticated)
+    @post_routes.put("/friend/set/{user_id}", tags=["friends"], responses=authenticated)
     def add_friend(user_id: UUID, viewer: CurrentUser, repo: Posts) -> Response:
         if user_id == viewer:
             raise HTTPException(status_code=400, detail="Нельзя добавить себя в друзья")
@@ -201,38 +205,40 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             raise HTTPException(status_code=400, detail="Пользователь не найден") from None
         return Response()
 
-    @app.put("/friend/delete/{user_id}", tags=["friends"], responses=authenticated)
+    @post_routes.put("/friend/delete/{user_id}", tags=["friends"], responses=authenticated)
     def delete_friend(user_id: UUID, viewer: CurrentUser, repo: Posts) -> Response:
         repo.delete_friend(viewer, user_id)
         return Response()
 
-    @app.post("/post/create", tags=["posts"], responses=authenticated)
+    @post_routes.post("/post/create", tags=["posts"], responses=authenticated)
     def create_post(body: PostCreate, author: CurrentUser, repo: Posts) -> UUID:
         try:
             return repo.create(author, body.text)
         except psycopg.errors.ForeignKeyViolation:
             raise HTTPException(status_code=400, detail="Пользователь не найден") from None
 
-    @app.put("/post/update", tags=["posts"], responses=authenticated)
+    @post_routes.put("/post/update", tags=["posts"], responses=authenticated)
     def update_post(body: PostUpdate, author: CurrentUser, repo: Posts) -> Response:
         if not repo.update(author, body.id, body.text):
             raise HTTPException(status_code=400, detail="Пост автора не найден")
         return Response()
 
-    @app.put("/post/delete/{id}", tags=["posts"], responses=authenticated)
+    @post_routes.put("/post/delete/{id}", tags=["posts"], responses=authenticated)
     def delete_post(id: UUID, author: CurrentUser, repo: Posts) -> Response:
         if not repo.delete(author, id):
             raise HTTPException(status_code=400, detail="Пост автора не найден")
         return Response()
 
-    @app.get("/post/get/{id}", response_model=Post, tags=["posts"])
+    @post_routes.get("/post/get/{id}", response_model=Post, tags=["posts"])
     def get_post(id: UUID, repo: Posts):
         post = repo.get(id)
         if post is None:
             raise HTTPException(status_code=400, detail="Пост не найден")
         return post
 
-    @app.get("/post/feed", response_model=list[Post], tags=["posts"], responses=authenticated)
+    @post_routes.get(
+        "/post/feed", response_model=list[Post], tags=["posts"], responses=authenticated
+    )
     def get_feed(
         user_id: CurrentUser,
         feed: Feed,
@@ -246,6 +252,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         with request.app.state.pool.connection() as conn:
             conn.execute("SELECT 1")
         return {"status": "ok"}
+
+    if redis_url:
+        app.include_router(post_routes)
 
     # в OpenAPI не должно быть 422: валидация отдаёт 400
     schema = app.openapi()
