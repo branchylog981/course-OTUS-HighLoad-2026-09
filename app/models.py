@@ -78,6 +78,29 @@ class ErrorResponse(BaseModel):
     message: str
 
 
+class PostCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    text: str
+
+    @field_validator("text")
+    @classmethod
+    def valid_post_text(cls, value: str) -> str:
+        if "\x00" in value:
+            raise ValueError("нулевые байты запрещены")
+        return value
+
+
+class PostUpdate(PostCreate):
+    id: UUID
+
+
+class Post(BaseModel):
+    id: UUID
+    text: str
+    author_user_id: UUID
+
+
 class SearchParams(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

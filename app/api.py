@@ -5,23 +5,29 @@ from uuid import UUID
 
 import jwt
 import psycopg
-from fastapi import Depends, FastAPI, HTTPException, Query, Request
+from fastapi import Depends, FastAPI, HTTPException, Query, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool, PoolTimeout
+from redis.exceptions import RedisError
 
 from app.config import Settings
+from app.feed import FeedCache, redis_client
 from app.models import (
     ErrorResponse,
     LoginRequest,
     LoginResponse,
+    Post,
+    PostCreate,
+    PostUpdate,
     Profile,
     RegisterRequest,
     RegisterResponse,
     SearchParams,
 )
+from app.posts import PostRepository
 from app.repository import UserRepository
 from app.routing import ReadRouter
 from app.security import Security
@@ -53,6 +59,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             with ExitStack() as stack:
                 readers = stack.enter_context(ReadRouter(settings)) if settings.read_hosts else None
                 app.state.users = UserRepository(pool, readers)
+                app.state.posts = PostRepository(pool)
+                cache = stack.enter_context(redis_client(settings.redis_url.get_secret_value()))
+                app.state.feed = FeedCache(pool, cache)
                 app.state.security = Security(settings)
                 yield
 
@@ -83,6 +92,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     for error in (psycopg.OperationalError, psycopg.InterfaceError, PoolTimeout):
         app.add_exception_handler(error, database_unavailable)
 
+    @app.exception_handler(RedisError)
+    async def feed_unavailable(_request: Request, _exc: RedisError):
+        logger.warning("Feed cache temporarily unavailable")
+        return JSONResponse(
+            status_code=503,
+            content={"message": "Кэш ленты временно недоступен"},
+            headers={"Retry-After": "5"},
+        )
+
     @app.exception_handler(Exception)
     async def internal_error(_request: Request, exc: Exception):
         logger.error("Internal server error (%s)", type(exc).__name__)
@@ -94,8 +112,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def security(request: Request) -> Security:
         return request.app.state.security
 
+    def posts(request: Request) -> PostRepository:
+        return request.app.state.posts
+
+    def feed_cache(request: Request) -> FeedCache:
+        return request.app.state.feed
+
     Users = Annotated[UserRepository, Depends(users)]
     Auth = Annotated[Security, Depends(security)]
+    Posts = Annotated[PostRepository, Depends(posts)]
+    Feed = Annotated[FeedCache, Depends(feed_cache)]
 
     def current_user(
         credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)],
@@ -112,6 +138,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             return auth.token_subject(credentials.credentials)
         except jwt.InvalidTokenError, ValueError, TypeError, AttributeError:
             raise unauthorized from None
+
+    CurrentUser = Annotated[UUID, Depends(current_user)]
+    authenticated = {401: {"model": ErrorResponse}}
 
     def find_profile(repo: UserRepository, user_id: UUID) -> dict:
         profile = repo.get_profile(user_id)
@@ -158,8 +187,59 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         tags=["users"],
         responses={401: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
     )
-    def get_me(user_id: Annotated[UUID, Depends(current_user)], repo: Users):
+    def get_me(user_id: CurrentUser, repo: Users):
         return find_profile(repo, user_id)
+
+    @app.put("/friend/add/{user_id}", tags=["friends"], responses=authenticated)
+    @app.put("/friend/set/{user_id}", tags=["friends"], responses=authenticated)
+    def add_friend(user_id: UUID, viewer: CurrentUser, repo: Posts) -> Response:
+        if user_id == viewer:
+            raise HTTPException(status_code=400, detail="Нельзя добавить себя в друзья")
+        try:
+            repo.add_friend(viewer, user_id)
+        except psycopg.errors.ForeignKeyViolation:
+            raise HTTPException(status_code=400, detail="Пользователь не найден") from None
+        return Response()
+
+    @app.put("/friend/delete/{user_id}", tags=["friends"], responses=authenticated)
+    def delete_friend(user_id: UUID, viewer: CurrentUser, repo: Posts) -> Response:
+        repo.delete_friend(viewer, user_id)
+        return Response()
+
+    @app.post("/post/create", tags=["posts"], responses=authenticated)
+    def create_post(body: PostCreate, author: CurrentUser, repo: Posts) -> UUID:
+        try:
+            return repo.create(author, body.text)
+        except psycopg.errors.ForeignKeyViolation:
+            raise HTTPException(status_code=400, detail="Пользователь не найден") from None
+
+    @app.put("/post/update", tags=["posts"], responses=authenticated)
+    def update_post(body: PostUpdate, author: CurrentUser, repo: Posts) -> Response:
+        if not repo.update(author, body.id, body.text):
+            raise HTTPException(status_code=400, detail="Пост автора не найден")
+        return Response()
+
+    @app.put("/post/delete/{id}", tags=["posts"], responses=authenticated)
+    def delete_post(id: UUID, author: CurrentUser, repo: Posts) -> Response:
+        if not repo.delete(author, id):
+            raise HTTPException(status_code=400, detail="Пост автора не найден")
+        return Response()
+
+    @app.get("/post/get/{id}", response_model=Post, tags=["posts"])
+    def get_post(id: UUID, repo: Posts):
+        post = repo.get(id)
+        if post is None:
+            raise HTTPException(status_code=400, detail="Пост не найден")
+        return post
+
+    @app.get("/post/feed", response_model=list[Post], tags=["posts"], responses=authenticated)
+    def get_feed(
+        user_id: CurrentUser,
+        feed: Feed,
+        offset: Annotated[int, Query(ge=0)] = 0,
+        limit: Annotated[int, Query(ge=1)] = 10,
+    ):
+        return feed.page(user_id, offset, limit)
 
     @app.get("/health", tags=["system"])
     def health(request: Request):

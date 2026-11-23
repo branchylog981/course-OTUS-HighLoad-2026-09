@@ -1,4 +1,6 @@
-# Социальная сеть (ДЗ 1–3)
+# Социальная сеть (ДЗ 1–4)
+
+**ДЗ №4:** [лента постов друзей, демоданные и перестройка кэша](#дз-4-лента-постов-друзей).
 
 **ДЗ №3:** [отчёт: репликация, нагрузка, авария master](reports/replication/REPORT.md).
 Запуск стенда и повторение экспериментов — [replication/README.md](replication/README.md).
@@ -25,7 +27,50 @@ docker compose up -d --build --wait
 - API: http://localhost:8080
 - Swagger: http://localhost:8080/docs
 
-Compose поднимает PostgreSQL, одноразовым сервисом `migrate` накатывает миграцию из `migrations/`, потом запускает приложение. Данные лежат в volume `postgres_data`, порт БД наружу не публикуется. `docker compose down` данные сохраняет, `down -v` — удаляет вместе с БД. После правок кода — снова `docker compose up -d --build --wait`.
+Compose поднимает PostgreSQL и Redis. Сервис `migrate` применяет SQL-миграции перед запуском API. Данные PostgreSQL лежат в volume `postgres_data`, БД и Redis доступны во внутренней сети Compose. `docker compose down` сохраняет данные PostgreSQL, `down -v` удаляет их вместе с volume. После правок кода выполните `docker compose up -d --build --wait`.
+
+## ДЗ 4. Лента постов друзей
+
+`GET /post/feed?offset=0&limit=10` возвращает массив объектов с полями `id`, `text` и `author_user_id`. Нужен `Authorization: Bearer <token>` из `/login`. `offset` и `limit` принимают целые числа от 0 и 1 соответственно. В ленту входят до 1000 последних постов друзей, сначала по времени последнего изменения, затем по UUID в порядке убывания. Редактирование поднимает пост в ленте. При `offset >= 1000` API возвращает `[]`. Изменения между запросами могут сдвигать страницы при такой пагинации.
+
+| Метод | Действие |
+| --- | --- |
+| `PUT /friend/set/{user_id}` или `PUT /friend/add/{user_id}` | Добавить автора в свой список друзей. Связь направленная |
+| `PUT /friend/delete/{user_id}` | Удалить автора из списка |
+| `POST /post/create` | Создать пост из `{"text":"…"}`, получить UUID как JSON-строку |
+| `PUT /post/update` | Изменить свой пост из `{"id":"…","text":"…"}` |
+| `PUT /post/delete/{id}` | Удалить свой пост |
+| `GET /post/get/{id}` | Получить опубликованный пост без токена |
+
+Маршруты используют [контракт OTUS](https://github.com/OtusTeam/highload/blob/master/homework/openapi.json).
+
+### Демонстрация
+
+После запуска Compose загрузите демоданные и получите токен наблюдателя. Команда `seed` добавляет четырёх пользователей, две связи и 1051 пост. Повторный запуск сохраняет существующие записи.
+
+```bash
+docker compose exec -T app python -m app.feed_admin seed
+VIEWER=00000000-0000-0000-0000-000000004001
+TOKEN=$(curl -fsS http://localhost:8080/login \
+  -H 'Content-Type: application/json' \
+  -d "{\"id\":\"$VIEWER\",\"password\":\"Feed-demo-2026\"}" \
+  | python3 -c 'import json, sys; print(json.load(sys.stdin)["token"])')
+
+curl -fsS 'http://localhost:8080/post/feed?limit=3' -H "Authorization: Bearer $TOKEN"
+curl -fsS 'http://localhost:8080/post/feed?offset=999&limit=2' -H "Authorization: Bearer $TOKEN"
+```
+
+Первая страница содержит посты №1050, №1049 и №1048. На позиции 999 находится пост №51, а пост №1051 принадлежит пользователю за пределами списка друзей.
+
+### Кэш и его перестройка
+
+- PostgreSQL хранит посты, список друзей и версию постов каждого автора. Триггер меняет версию в той же транзакции, что и пост. Ключ готовой ленты в Redis зависит от состава друзей и их версий. Поэтому после успешной записи первый новый запрос использует актуальный ключ. Ключи предыдущих версий истекают через 15 минут.
+- Для прогретой ленты PostgreSQL читает только идентификаторы друзей и версии, а Redis отдаёт нужную страницу списка. При промахе приложение берёт до 1000 постов каждого друга из Redis, восстанавливает отсутствующие подборки из PostgreSQL и сливает их в список из максимум 1000 постов. Для холодного чтения версии и посты берутся из одного снимка основной БД, поэтому параллельная запись не может подменить актуальную ленту старой.
+- После очистки или перезапуска Redis ленты заполняются при первом чтении. Для принудительной перестройки актуальной ленты и подборок её авторов можно прочитать данные из PostgreSQL командой ниже. При недоступном Redis `/post/feed` отвечает `503` с `Retry-After`, при этом операции с постами и друзьями продолжают записываться в PostgreSQL.
+
+```bash
+docker compose exec -T app python -m app.feed_admin rebuild "$VIEWER"
+```
 
 ## Методы
 
@@ -90,13 +135,13 @@ curl -sS --get http://localhost:8080/user/search \
 
 ## Проверки
 
-Тесты идут против настоящего PostgreSQL из compose:
+Тесты используют PostgreSQL и Redis из Compose.
 
 ```bash
 docker compose --profile test run --rm tests
 ```
 
-Покрыты основной сценарий, ошибки валидации, JWT (просроченный, подписанный другим секретом, другим алгоритмом), проверка, что SQL-инъекции сохраняются как обычный текст, и параллельные чтения. Тесты удаляют только созданных ими пользователей.
+Покрыты регистрация и вход, валидация, JWT, параллельные чтения, инвалидация ленты после правок постов и списка друзей, лимит кэша, перестройка и запись при сбое Redis. Тесты удаляют только созданных ими пользователей.
 
 Линт там же: `ruff check app tests` и `ruff format --check app tests`.
 
@@ -108,7 +153,7 @@ npx --yes newman run postman/social-network.postman_collection.json -e postman/l
 
 ## Запуск без Docker
 
-Нужны Python 3.14 и PostgreSQL 17. Создать пустую БД, заполнить `DATABASE_URL` и `JWT_SECRET` в `.env` (либо оставить `DATABASE_URL` пустым и задать стандартные `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`):
+Нужны Python 3.14, PostgreSQL 17 и Redis 7.4. Создайте пустую БД и заполните `DATABASE_URL`, `REDIS_URL` и `JWT_SECRET` в `.env`. Для подключения к PostgreSQL также можно оставить `DATABASE_URL` пустым и задать стандартные `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`.
 
 ```bash
 python3 -m venv .venv
@@ -124,11 +169,13 @@ python3 -m venv .venv
 - `app/api.py` — ручки FastAPI, зависимости, обработка ошибок
 - `app/models.py` — pydantic-модели запросов и анкеты
 - `app/repository.py` — SQL-запросы
+- `app/posts.py`, `app/feed.py`, `app/feed_admin.py` — операции с постами и друзьями, кэш ленты и команды управления
 - `app/security.py` — argon2 и JWT
 - `app/config.py` — настройки из переменных окружения
 - `app/migrate.py` — применение нумерованных идемпотентных SQL-миграций
 - `migrations/001_create_users.sql` — первоначальная схема, таблица `users`
 - `migrations/002_users_name_prefix.sql` — составной B-tree для префиксного поиска
+- `migrations/003_friends_and_posts.sql` — друзья, посты и версии постов авторов
 - `benchmarks/` — загрузчик миллиона анкет, HTTP-нагрузка и генерация отчёта
 
 Пароли — Argon2id с независимой солью; для несуществующих id проверяется фиктивный хеш, чтобы время ответа не выдавало, есть ли пользователь. Токен — JWT HS256 с exp/iss/aud, при проверке алгоритм зафиксирован, TTL задаётся `TOKEN_TTL_SECONDS` (по умолчанию час). Секрет — минимум 32 байта, меняется в `.env`; смена секрета сбрасывает все выданные токены.
@@ -136,7 +183,7 @@ python3 -m venv .venv
 Все запросы с пользовательскими данными идут через параметры `%s`, строковой склейки в SQL нет.
 Соединения — из пула psycopg_pool. В ДЗ №2 добавлен индекс
 `(first_name varchar_pattern_ops, second_name varchar_pattern_ops)` для поиска.
-Обычный запуск применяет обе миграции; benchmark откладывает индекс до второй фазы.
+Обычный запуск применяет все миграции. В стенде поиска индекс добавляется во второй фазе.
 Для ДЗ №3 добавлен отдельный `compose.replication.yaml`: master и две физические
 реплики PostgreSQL, READ ONLY маршрутизация двух GET API. Обычный compose
-сохраняет запуск с одной БД. Шардирование и кэширование не используются.
+сохраняет запуск с одной БД.
