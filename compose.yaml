@@ -13,6 +13,15 @@ services:
       timeout: 3s
       retries: 30
 
+  redis:
+    image: redis:7.4-bookworm
+    command: ["redis-server", "--save", "", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
   migrate:
     build: .
     environment: &app-env
@@ -23,10 +32,11 @@ services:
       PGPASSWORD: ${POSTGRES_PASSWORD:?Copy .env.example to .env first}
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
       TOKEN_TTL_SECONDS: ${TOKEN_TTL_SECONDS:-3600}
+      REDIS_URL: redis://redis:6379/0
     depends_on:
       db:
         condition: service_healthy
-    command: ["python", "-m", "app.migrate", "--through", "002"]
+    command: ["python", "-m", "app.migrate"]
 
   app:
     build: .
@@ -34,6 +44,8 @@ services:
     depends_on:
       migrate:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
     ports:
       - "127.0.0.1:${APP_PORT:-8080}:8080"
     healthcheck:
@@ -50,6 +62,8 @@ services:
     depends_on:
       migrate:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
     volumes:
       - ./tests:/app/tests:ro
       - ./pyproject.toml:/app/pyproject.toml:ro

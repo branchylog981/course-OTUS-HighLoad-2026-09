@@ -17,6 +17,9 @@ x-db: &db
     retries: 60
 
 services:
+  redis:
+    image: redis:7.4-bookworm
+    command: ["redis-server", "--save", "", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]
   master:
     <<: *db
     volumes:
@@ -56,7 +59,8 @@ services:
       PGPASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
       READ_HOSTS: '${READ_HOSTS:-["slave1","slave2"]}'
-    command: ["python", "-m", "app.migrate", "--through", "002"]
+      REDIS_URL: redis://redis:6379/0
+    command: ["python", "-m", "app.migrate"]
     depends_on:
       master:
         condition: service_healthy
@@ -77,6 +81,8 @@ services:
     depends_on:
       migrate:
         condition: service_completed_successfully
+      redis:
+        condition: service_started
       slave1:
         condition: service_healthy
       slave2:

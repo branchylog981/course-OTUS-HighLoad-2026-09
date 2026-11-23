@@ -7,7 +7,7 @@ class Settings(BaseSettings):
 
     # пустой DSN — тогда libpq возьмёт PGHOST/PGPORT/PGDATABASE/PGUSER/PGPASSWORD
     database_url: SecretStr = SecretStr("")
-    redis_url: SecretStr = SecretStr("")
+    redis_url: SecretStr = SecretStr("redis://localhost:6379/0")
     # Empty list keeps the single-database deployment working.
     read_hosts: list[str] = Field(default_factory=list)
     jwt_secret: SecretStr
